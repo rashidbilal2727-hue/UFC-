@@ -19,7 +19,6 @@ button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer
 .hidden{display:none!important}
 :root{--red:#ff3b30;--red2:#ff6b5e;--stroke:rgba(255,255,255,.22);--stroke2:rgba(255,255,255,.10)}
 .g{background:linear-gradient(150deg,rgba(255,255,255,.16),rgba(255,255,255,.05));backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--stroke);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),inset 0 -1px 0 rgba(255,255,255,.07),0 12px 34px rgba(0,0,0,.5)}
-.gsoft{background:rgba(255,255,255,.07);backdrop-filter:blur(16px) saturate(160%);-webkit-backdrop-filter:blur(16px) saturate(160%);border:1px solid var(--stroke2);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 8px 22px rgba(0,0,0,.35)}
 #hdr{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;margin:calc(8px + env(safe-area-inset-top)) 12px 8px;padding:8px 12px;border-radius:22px}
 .logo{font-weight:900;letter-spacing:-.6px;font-size:19px;color:#fff}
 .logo b{color:var(--red)}
@@ -67,6 +66,12 @@ button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer
 h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 .empty{padding:60px 20px;text-align:center;color:#9aa1b2;font-size:14px}
 .retry{margin-top:12px;padding:11px 20px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid var(--stroke);font-weight:800;font-size:13px}
+#setup{margin:0 12px 12px;padding:13px;border-radius:20px;display:flex;gap:11px;align-items:center}
+#setup .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(150deg,#ff3b30,#c81e14);font-size:16px;flex:0 0 auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+#setup .tx{flex:1;min-width:0;font-size:12.5px;line-height:1.45;color:#d6dae4}
+#setup .tx b{color:#fff;display:block;font-size:13px;margin-bottom:2px}
+#setup .go{flex:0 0 auto;padding:9px 14px;border-radius:12px;font-size:12.5px;font-weight:800;background:#fff;color:#05060a}
+#setup .x{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);font-size:12px}
 #det{padding-bottom:40px}
 #det .top{position:relative;height:44vh;min-height:260px;margin:0 12px;border-radius:26px;overflow:hidden;border:1px solid var(--stroke2)}
 #det .top img{width:100%;height:100%;object-fit:cover}
@@ -89,7 +94,7 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 .tabs::-webkit-scrollbar{display:none}
 .tab{flex:0 0 auto;padding:10px 16px;border-radius:14px;font-size:13px;font-weight:800;background:rgba(255,255,255,.08);border:1px solid var(--stroke2);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
 .tab.on{background:#fff;color:#05060a;box-shadow:0 8px 20px rgba(255,255,255,.25)}
-#nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:45;display:flex;padding:7px;border-radius:24px}
+#nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:45;display:flex;padding:7px;border-radius:24px;background:linear-gradient(150deg,rgba(255,255,255,.16),rgba(255,255,255,.05));backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--stroke);box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 12px 34px rgba(0,0,0,.5)}
 #nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;color:#98a0b0;padding:7px 0;font-weight:700;border-radius:18px;transition:background .15s}
 #nav button.on{color:#fff;background:linear-gradient(150deg,rgba(255,255,255,.2),rgba(255,255,255,.06));box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
 #nav .g{font-size:17px;line-height:1}
@@ -112,14 +117,14 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 #plStuck .wide{margin-bottom:9px}
 #fsFloat{position:absolute;right:14px;bottom:14px;z-index:7;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:19px;background:linear-gradient(150deg,rgba(255,255,255,.24),rgba(255,255,255,.07));backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--stroke);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 12px 30px rgba(0,0,0,.55)}
 #fsFloat:active{transform:scale(.9)}
-#plBot{flex:0 0 auto;display:flex;gap:7px;margin:8px 10px calc(8px + env(safe-area-inset-bottom));padding:7px;border-radius:20px;overflow-x:auto;scrollbar-width:none;align-items:center}
+#plBot{flex:0 0 auto;display:flex;gap:7px;margin:8px 10px calc(8px + env(safe-area-inset-bottom));padding:7px;border-radius:20px;overflow-x:auto;scrollbar-width:none;align-items:center;background:linear-gradient(150deg,rgba(255,255,255,.16),rgba(255,255,255,.05));backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--stroke);box-shadow:inset 0 1px 0 rgba(255,255,255,.38)}
 #plBot::-webkit-scrollbar{display:none}
 #plBot select{flex:0 0 auto;padding:9px 12px;border-radius:13px;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.1);border:1px solid var(--stroke2);color:#fff;outline:none;-webkit-appearance:none;appearance:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
 #plBot .nx{flex:0 0 auto;padding:10px 14px;border-radius:13px;font-size:12.5px;font-weight:800;background:linear-gradient(150deg,#ff3b30,#c81e14);color:#fff;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 20px rgba(255,59,48,.4)}
 #plBot .gh{flex:0 0 auto;padding:10px 14px;border-radius:13px;font-size:12.5px;font-weight:800;background:rgba(255,255,255,.1);border:1px solid var(--stroke2);white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
 #plBot button:active,#plBot .nx:active{transform:scale(.95)}
 #plHint{flex:0 0 auto;font-size:11.5px;color:#9aa1b2;padding:0 5px;white-space:nowrap}
-#plAud{box-shadow:inset 0 0 0 1px rgba(255,59,48,.65),inset 0 1px 0 rgba(255,255,255,.22);font-weight:800}
+#plAud,#plSubLang{box-shadow:inset 0 0 0 1px rgba(255,59,48,.6),inset 0 1px 0 rgba(255,255,255,.22);font-weight:800}
 .sheet{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end}
 .sheet .in{width:100%;max-height:86vh;overflow-y:auto;border-radius:28px 28px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
 .sheet h3{margin:0 0 14px;font-size:17px}
@@ -186,7 +191,7 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
   <main id="main"></main>
 </div>
 
-<nav id="nav" class="g">
+<nav id="nav">
   <button data-v="home" class="on"><span class="g">&#127968;</span>Home</button>
   <button data-v="movie"><span class="g">&#127916;</span>Movies</button>
   <button data-v="series"><span class="g">&#128250;</span>Series</button>
@@ -206,7 +211,7 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
     <div id="plStuck" class="hidden">
       <div class="bx g">
         <h3>Stream nahi khul raha</h3>
-        <p>Server ne jawab nahi diya. Neeche se ek try karo.</p>
+        <p>Server ne jawab nahi diya. VPN on hai to band karo, ya neeche se Next dabao.</p>
         <button class="wide red" id="stkRetry">Retry</button>
         <button class="wide gh2" id="stkLower">Lower quality try karo</button>
         <button class="wide gh2" id="stkNew">New tab me kholo</button>
@@ -214,10 +219,11 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
       </div>
     </div>
   </div>
-  <div id="plBot" class="g">
+  <div id="plBot">
     <select id="plSrv"></select>
     <select id="plQual"></select>
     <select id="plAud"></select>
+    <select id="plSubLang"></select>
     <button class="nx" id="plNext">Next &#9654;</button>
     <button class="gh" id="plNew">New tab</button>
     <span id="plHint">If black, tap Next</span>
@@ -244,10 +250,19 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
         <option value="orig">Sirf original</option>
       </select>
     </div>
+    <div class="fld"><label>Default subtitle</label>
+      <select id="setSub">
+        <option value="off">Off</option>
+        <option value="hin">&#2361;&#2367;&#2306;&#2342;&#2368; (Hindi)</option>
+        <option value="eng">English</option>
+        <option value="tam">Tamil</option>
+        <option value="tel">Telugu</option>
+      </select>
+    </div>
     <div class="fld"><label>Default server</label><select id="setSrv"></select></div>
-    <div class="fld"><label>TMDB API key (dubbing list ke liye)</label><input id="setKey" placeholder="paste your v3 api key" autocomplete="off"></div>
+    <div class="fld"><label>TMDB API key (dubbing + subtitle list ke liye)</label><input id="setKey" placeholder="32 character v3 api key paste karo" autocomplete="off"></div>
     <button class="wide red" id="setSave">Save</button>
-    <div class="sub">Key free milti hai: themoviedb.org &gt; Settings &gt; API. Iske bina poori dub list nahi aayegi.</div>
+    <div class="sub">Key themoviedb.org &gt; Settings &gt; API &gt; "API Key (v3 auth)" se milegi. Token nahi, Key.</div>
   </div>
 </div>
 
@@ -281,14 +296,15 @@ const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 
 const state={
   view:"home", cache:{}, prog:LS.get("nfx_prog",{}), list:LS.get("nfx_list",[]),
-  set:Object.assign({qual:"1080",aud:"auto",srv:"vixsrc"},LS.get("nfx_set",{})),
-  item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", touched:false, timer:null, loadTimer:null,
+  set:Object.assign({qual:"1080",aud:"auto",srv:"vixsrc",sub:"off"},LS.get("nfx_set",{})),
+  item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", sub:"off", touched:false, timer:null, loadTimer:null,
   playId:null, playType:"movie", orig:"", origName:"", audioList:[], tmdb:"", pos:0, posTimer:null,
   healthy:false, fails:0, mode:"play", frame:null, token:0
 };
 
+/* lang:true = server language param leta hai (dubbing support) */
 const SRV=[
- {id:"vixsrc",name:"VixSrc HD",need:"tmdb",resume:true,msg:false,
+ {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:true,resume:true,msg:false,
   resolve:async c=>{
     const lang=(c.l&&c.l.length===2)?c.l:"en";
     const path=c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e;
@@ -298,28 +314,31 @@ const SRV=[
     }catch(e){}
     return "https://vixsrc.to/"+path+"?lang="+lang;
   }},
- {id:"binge",name:"Binge (ad-free)",need:"imdb",resume:false,msg:true,
-  u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"},
- {id:"vidsrc",name:"VidSrc",need:"imdb",resume:false,
-  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1"},
+ {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,resume:false,
+  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
+ {id:"vidfast",name:"VidFast",need:"imdb",lang:true,resume:true,msg:true,
+  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
  {id:"vidcore",name:"VidCore",need:"tmdb",resume:false,
-  u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1"},
+  u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
  {id:"vidlink",name:"VidLink",need:"tmdb",resume:false,
-  u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true"},
+  u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true&lang="+l},
  {id:"embedwave",name:"EmbedWave",need:"tmdb",resume:false,
-  u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)},
+  u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?lang="+l},
  {id:"vidnest",name:"VidNest",need:"imdb",resume:false,
   u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)},
- {id:"vidfast",name:"VidFast",need:"imdb",resume:true,msg:true,
-  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)}
+ {id:"binge",name:"Binge (ad-free + subs)",need:"imdb",resume:false,msg:true,
+  u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")}
 ];
 function aq(c,l){
   let s="";
   if(c.resume){ s+="&audio="+l+"&lang="+l; if(c.pos>5)s+="&startAt="+Math.floor(c.pos); }
+  if(c.sub&&c.sub!=="off")s+="&sub_lang="+c.sub;
   return s;
 }
 
 const QL=[["2160","4K"],["1440","2K"],["1080","1080p"],["720","720p"],["auto","Auto"]];
+const SUBL=[["off","Subs off"],["hin","Hindi subs"],["eng","English subs"],["tam","Tamil subs"],["tel","Telugu subs"],["mal","Malayalam subs"],["ben","Bengali subs"],["mar","Marathi subs"],["spa","Spanish subs"],["fra","French subs"],["deu","German subs"],["ara","Arabic subs"]];
+const L2S={hi:"hin",en:"eng",ta:"tam",te:"tel",ml:"mal",kn:"kan",bn:"ben",mr:"mar",pa:"pan",ur:"urd",gu:"guj",es:"spa",fr:"fra",de:"deu",it:"ita",pt:"por",ru:"rus",ar:"ara",tr:"tur",id:"ind",ja:"jpn",ko:"kor",zh:"zho"};
 const LNAME={hi:"\u0939\u093f\u0928\u094d\u0926\u0940",en:"English",ta:"\u0ba4\u0bae\u0bbf\u0bb4\u0bcd",te:"\u0c24\u0c46\u0c32\u0c41\u0c17\u0c41",ml:"\u0d2e\u0d32\u0d2f\u0d3e\u0d32\u0d02",kn:"\u0c95\u0ca8\u0ccd\u0ca8\u0ca1",bn:"\u09ac\u09be\u0982\u09b2\u09be",mr:"\u092e\u0930\u093e\u0920\u0940",pa:"\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40",ur:"\u0627\u0631\u062f\u0648",gu:"\u0a97\u0ac1\u0a9c\u0ab0\u0abe\u0aa4\u0ac0",es:"Espa\u00f1ol",fr:"Fran\u00e7ais",de:"Deutsch",it:"Italiano",pt:"Portugu\u00eas",ru:"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",ja:"\u65e5\u672c\u8a9e",ko:"\ud55c\uad6d\uc5b4",zh:"\u4e2d\u6587",ar:"\u0627\u0644\u0639\u0631\u0628\u064a\u0629",tr:"T\u00fcrk\u00e7e",id:"Bahasa",th:"\u0e44\u0e17\u0e22",vi:"Ti\u1ebfng Vi\u1ec7t",nl:"Nederlands",pl:"Polski",uk:"\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430",fa:"\u0641\u0627\u0631\u0633\u06cc",he:"\u05e2\u05d1\u05e8\u05d9\u05ea",el:"\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac",ro:"Rom\u00e2n\u0103",cs:"\u010ce\u0161tina",hu:"Magyar",sv:"Svenska",da:"Dansk",fi:"Suomi",no:"Norsk",sw:"Kiswahili"};
 
 const $=(s,r)=>(r||document).querySelector(s);
@@ -371,7 +390,6 @@ async function loadLang(id){
   }catch(e){return null}
 }
 
-/* asli dub list TMDB translations se */
 async function getDubs(tmdb,type){
   const key=LS.get("nfx_tkey","");
   if(!key||!tmdb)return [];
@@ -395,10 +413,7 @@ function buildAudio(orig,dubs){
   if(orig)L.push({v:orig,label:(LNAME[orig]||orig.toUpperCase()),orig:true});
   else L.push({v:"original",label:"Original",orig:true});
   const pool=(dubs&&dubs.length)?dubs.filter(c=>c!==orig):FALLBACK.filter(c=>c!==orig);
-  pool.sort((a,b)=>{
-    const pr=c=>c==="hi"?0:c==="en"?1:2;
-    return pr(a)-pr(b)||a.localeCompare(b);
-  });
+  pool.sort((a,b)=>{const pr=c=>c==="hi"?0:c==="en"?1:2;return pr(a)-pr(b)||a.localeCompare(b)});
   pool.forEach(c=>L.push({v:c,label:LNAME[c]||c.toUpperCase()}));
   return L;
 }
@@ -413,6 +428,14 @@ function defaultAudio(orig){
 }
 const srvOk=s=>s.need!=="tmdb"||!!state.tmdb;
 const audLabel=v=>{const o=state.audioList.find(x=>x.v===v);return o?o.label:(LNAME[v]||v)};
+const wantsDub=()=>state.aud&&state.aud!==state.orig&&state.aud!=="original";
+
+/* agar dub chuni hai to language-support servers pehle */
+function srvOrder(){
+  const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
+  if(wantsDub())list.sort((a,b)=>(SRV[a].lang?0:1)-(SRV[b].lang?0:1));
+  return list;
+}
 
 function go(v){
   state.view=v;window.onscroll=null;
@@ -452,8 +475,18 @@ const ROWS=[
  ["Sci-Fi","movie","top","Sci-Fi"]
 ];
 
+function setupBanner(host){
+  if(LS.get("nfx_tkey","")||LS.get("nfx_setup_off",false))return;
+  const b=el("div","g");b.id="setup";
+  b.innerHTML='<div class="ic">&#127760;</div><div class="tx"><b>Dubbing on karo</b>TMDB ki free key daalo, phir har movie ki saari languages milegi.</div><button class="go" id="stpGo">Key daalo</button><button class="x" id="stpX">&#10005;</button>';
+  host.appendChild(b);
+  $("#stpGo",b).onclick=openSettings;
+  $("#stpX",b).onclick=()=>{LS.set("nfx_setup_off",true);b.remove()};
+}
+
 async function renderHome(){
   const m=$("#main");m.innerHTML="";
+  setupBanner(m);
   const cw=Object.entries(state.prog).sort((a,b)=>b[1].t-a[1].t).slice(0,12);
   if(cw.length){
     const r=el("div","row");r.appendChild(el("h2",null,"Continue Watching"));
@@ -650,12 +683,15 @@ function play(type,id,s,e){
   state.mode="play";
   state.qual=state.set.qual;
   state.aud=defaultAudio(state.orig);
+  state.sub=state.set.sub||"off";
   const saved=state.prog[id];
   state.pos=(saved&&saved.s===s&&saved.e===e&&saved.pos)?saved.pos:0;
 
+  const order=srvOrder();
   let i=SRV.findIndex(x=>x.id===state.set.srv);
-  if(i<0||!srvOk(SRV[i]))i=SRV.findIndex(x=>srvOk(x));
-  state.srv=i<0?0:i;
+  if(i<0||!srvOk(SRV[i]))i=order[0];
+  state.srv=i;
+
   state.playId=id;state.playType=type;
 
   $("#pl").classList.remove("hidden");
@@ -672,6 +708,7 @@ function fillSelects(){
   $("#plSrv").style.display="";
   $("#plQual").style.display="";
   $("#plAud").style.display="";
+  $("#plSubLang").style.display="";
   $("#plNext").style.display="";
 
   const sv=$("#plSrv");sv.innerHTML="";
@@ -690,6 +727,19 @@ function fillSelects(){
   a.onchange=()=>{
     state.aud=a.value;state.touched=true;state.fails=0;
     $("#plHint").textContent="Audio: "+audLabel(state.aud);
+    const order=srvOrder();
+    if(wantsDub()&&!SRV[state.srv].lang){
+      state.srv=order[0];sv.value=state.srv;
+    }
+    mount();
+  };
+
+  const sb=$("#plSubLang");sb.innerHTML="";
+  SUBL.forEach(([v,l])=>sb.add(new Option(l,v)));
+  sb.value=state.sub;
+  sb.onchange=()=>{
+    state.sub=sb.value;state.touched=true;
+    $("#plHint").textContent="Subs: "+sb.options[sb.selectedIndex].text;
     mount();
   };
 
@@ -708,7 +758,7 @@ function toggleFs(){
 
 function ctxObj(){
   const s=SRV[state.srv];
-  return {t:state.playType,id:state.playId,s:state.s,e:state.e,q:state.qual,pos:state.pos,tmdb:state.tmdb,resume:s.resume};
+  return {t:state.playType,id:state.playId,s:state.s,e:state.e,q:state.qual,pos:state.pos,tmdb:state.tmdb,resume:s.resume,sub:state.sub};
 }
 function curUrl(){
   const s=SRV[state.srv];
@@ -765,7 +815,7 @@ async function mount(){
   f.onload=()=>{
     if(state.healthy)return;
     $("#plHint").textContent = s.msg ? "Buffering\u2026" : "Chal raha hai? warna Next dabao";
-    if(!s.msg)armWatchdog(32000);
+    if(!s.msg)armWatchdog(12000);
   };
   st.insertBefore(f,$("#fsFloat"));
   state.frame=f;
@@ -781,7 +831,7 @@ $("#stage").addEventListener("pointerdown",()=>{
 function advance(auto){
   clearTimeout(state.loadTimer);clearTimeout(state.timer);
   hideStuck();
-  const avail=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
+  const avail=srvOrder();
   if(!avail.length){showStuck();return}
   const at=avail.indexOf(state.srv);
   const wrapped=at===avail.length-1;
@@ -814,7 +864,7 @@ function showStuck(){
 }
 function hideStuck(){$("#plStuck").classList.add("hidden")}
 
-$("#stkRetry").onclick=()=>{state.fails=0;state.srv=0;$("#plSrv").value=0;hideStuck();mount()};
+$("#stkRetry").onclick=()=>{state.fails=0;state.srv=srvOrder()[0];$("#plSrv").value=state.srv;hideStuck();mount()};
 $("#stkLower").onclick=()=>{
   const qi=QL.findIndex(q=>q[0]===state.qual);
   state.qual=qi>=0&&qi<QL.length-1?QL[qi+1][0]:"auto";
@@ -927,9 +977,9 @@ async function renderProfile(){
 
   const menu=el("div","menu");
   const items=[
+    ["&#9881;","Settings"+(LS.get("nfx_tkey","")?"":" (key baaki hai)"),"set"],
     ["&#11014;","Upload video / photo","up"],
     ["&#128278;","My List","list"],
-    ["&#9881;","Settings","set"],
     [u?"&#128682;":"&#128273;",u?"Sign out":"Sign in","auth"]
   ];
   items.forEach(([g,label,act])=>{
@@ -976,6 +1026,7 @@ function openLive(url,title){
   $("#plSrv").style.display="none";
   $("#plQual").style.display="none";
   $("#plAud").style.display="none";
+  $("#plSubLang").style.display="none";
   $("#plNext").style.display="none";
   $("#plNew").onclick=()=>window.open(url,"_blank");
   $("#plBack").onclick=closePlayer;
@@ -999,6 +1050,7 @@ function openSettings(){
   SRV.forEach(x=>$("#setSrv").add(new Option(x.name,x.id)));
   $("#setQual").value=state.set.qual;
   $("#setAud").value=state.set.aud;
+  $("#setSub").value=state.set.sub||"off";
   $("#setSrv").value=state.set.srv;
   $("#setKey").value=LS.get("nfx_tkey","");
   $("#setSheet").classList.remove("hidden");
@@ -1006,9 +1058,10 @@ function openSettings(){
 $("#setSheet").onclick=e=>{if(e.target.id==="setSheet")$("#setSheet").classList.add("hidden")};
 $("#upSheet").onclick=e=>{if(e.target.id==="upSheet")$("#upSheet").classList.add("hidden")};
 $("#setSave").onclick=()=>{
-  state.set={qual:$("#setQual").value,aud:$("#setAud").value,srv:$("#setSrv").value};
+  state.set={qual:$("#setQual").value,aud:$("#setAud").value,sub:$("#setSub").value,srv:$("#setSrv").value};
   LS.set("nfx_set",state.set);
-  LS.set("nfx_tkey",$("#setKey").value.trim());
+  const k=$("#setKey").value.trim();
+  if(k)LS.set("nfx_tkey",k);
   $("#setSheet").classList.add("hidden");
 };
 
