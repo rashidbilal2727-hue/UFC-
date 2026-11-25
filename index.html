@@ -211,10 +211,10 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
     <div id="plStuck" class="hidden">
       <div class="bx g">
         <h3>Stream nahi khul raha</h3>
-        <p>Server ne jawab nahi diya. VPN on hai to band karo, ya neeche se Next dabao.</p>
-        <button class="wide red" id="stkRetry">Retry</button>
-        <button class="wide gh2" id="stkLower">Lower quality try karo</button>
+        <p>Pehle "New tab" dabao. Wahan chala to sirf yahi server block hai — Next dabao. Wahan bhi block aaye to network ka issue hai.</p>
+        <button class="wide red" id="stkNext">Next server try karo</button>
         <button class="wide gh2" id="stkNew">New tab me kholo</button>
+        <button class="wide gh2" id="stkLower">Lower quality try karo</button>
         <button class="wide gh2" id="stkClose">Band karo</button>
       </div>
     </div>
@@ -299,11 +299,15 @@ const state={
   set:Object.assign({qual:"1080",aud:"auto",srv:"vixsrc",sub:"off"},LS.get("nfx_set",{})),
   item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", sub:"off", touched:false, timer:null, loadTimer:null,
   playId:null, playType:"movie", orig:"", origName:"", audioList:[], tmdb:"", pos:0, posTimer:null,
-  healthy:false, fails:0, mode:"play", frame:null, token:0
+  healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}
 };
 
-/* lang:true = server language param leta hai (dubbing support) */
+/* lang:true = server language param leta hai (dubbing) */
 const SRV=[
+ {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,resume:false,
+  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
+ {id:"vidfast",name:"VidFast",need:"imdb",lang:true,resume:true,msg:true,
+  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
  {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:true,resume:true,msg:false,
   resolve:async c=>{
     const lang=(c.l&&c.l.length===2)?c.l:"en";
@@ -314,10 +318,6 @@ const SRV=[
     }catch(e){}
     return "https://vixsrc.to/"+path+"?lang="+lang;
   }},
- {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,resume:false,
-  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
- {id:"vidfast",name:"VidFast",need:"imdb",lang:true,resume:true,msg:true,
-  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
  {id:"vidcore",name:"VidCore",need:"tmdb",resume:false,
   u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
  {id:"vidlink",name:"VidLink",need:"tmdb",resume:false,
@@ -338,7 +338,6 @@ function aq(c,l){
 
 const QL=[["2160","4K"],["1440","2K"],["1080","1080p"],["720","720p"],["auto","Auto"]];
 const SUBL=[["off","Subs off"],["hin","Hindi subs"],["eng","English subs"],["tam","Tamil subs"],["tel","Telugu subs"],["mal","Malayalam subs"],["ben","Bengali subs"],["mar","Marathi subs"],["spa","Spanish subs"],["fra","French subs"],["deu","German subs"],["ara","Arabic subs"]];
-const L2S={hi:"hin",en:"eng",ta:"tam",te:"tel",ml:"mal",kn:"kan",bn:"ben",mr:"mar",pa:"pan",ur:"urd",gu:"guj",es:"spa",fr:"fra",de:"deu",it:"ita",pt:"por",ru:"rus",ar:"ara",tr:"tur",id:"ind",ja:"jpn",ko:"kor",zh:"zho"};
 const LNAME={hi:"\u0939\u093f\u0928\u094d\u0926\u0940",en:"English",ta:"\u0ba4\u0bae\u0bbf\u0bb4\u0bcd",te:"\u0c24\u0c46\u0c32\u0c41\u0c17\u0c41",ml:"\u0d2e\u0d32\u0d2f\u0d3e\u0d32\u0d02",kn:"\u0c95\u0ca8\u0ccd\u0ca8\u0ca1",bn:"\u09ac\u09be\u0982\u09b2\u09be",mr:"\u092e\u0930\u093e\u0920\u0940",pa:"\u0a2a\u0a70\u0a1c\u0a3e\u0a2c\u0a40",ur:"\u0627\u0631\u062f\u0648",gu:"\u0a97\u0ac1\u0a9c\u0ab0\u0abe\u0aa4\u0ac0",es:"Espa\u00f1ol",fr:"Fran\u00e7ais",de:"Deutsch",it:"Italiano",pt:"Portugu\u00eas",ru:"\u0420\u0443\u0441\u0441\u043a\u0438\u0439",ja:"\u65e5\u672c\u8a9e",ko:"\ud55c\uad6d\uc5b4",zh:"\u4e2d\u6587",ar:"\u0627\u0644\u0639\u0631\u0628\u064a\u0629",tr:"T\u00fcrk\u00e7e",id:"Bahasa",th:"\u0e44\u0e17\u0e22",vi:"Ti\u1ebfng Vi\u1ec7t",nl:"Nederlands",pl:"Polski",uk:"\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430",fa:"\u0641\u0627\u0631\u0633\u06cc",he:"\u05e2\u05d1\u05e8\u05d9\u05ea",el:"\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac",ro:"Rom\u00e2n\u0103",cs:"\u010ce\u0161tina",hu:"Magyar",sv:"Svenska",da:"Dansk",fi:"Suomi",no:"Norsk",sw:"Kiswahili"};
 
 const $=(s,r)=>(r||document).querySelector(s);
@@ -350,7 +349,7 @@ const ph=(w,h)=>'data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http:
 function fetchT(url,ms){
   const ctrl=new AbortController();
   const to=setTimeout(()=>ctrl.abort(),ms);
-  return fetch(url,{signal:ctrl.signal,cache:"no-store"}).finally(()=>clearTimeout(to));
+  return fetch(url,{signal:ctrl.signal,cache:"no-store",referrerPolicy:"no-referrer"}).finally(()=>clearTimeout(to));
 }
 async function jget(url){
   const c=state.cache[url];
@@ -430,10 +429,11 @@ const srvOk=s=>s.need!=="tmdb"||!!state.tmdb;
 const audLabel=v=>{const o=state.audioList.find(x=>x.v===v);return o?o.label:(LNAME[v]||v)};
 const wantsDub=()=>state.aud&&state.aud!==state.orig&&state.aud!=="original";
 
-/* agar dub chuni hai to language-support servers pehle */
+/* dub chuni hai to language-support servers pehle, block kiye hue last me */
 function srvOrder(){
   const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
-  if(wantsDub())list.sort((a,b)=>(SRV[a].lang?0:1)-(SRV[b].lang?0:1));
+  const w=c=>(state.blk[SRV[c].id]?20:0)+(wantsDub()&&!SRV[c].lang?10:0);
+  list.sort((a,b)=>w(a)-w(b));
   return list;
 }
 
@@ -712,7 +712,7 @@ function fillSelects(){
   $("#plNext").style.display="";
 
   const sv=$("#plSrv");sv.innerHTML="";
-  SRV.forEach((x,i)=>{if(srvOk(x))sv.add(new Option(x.name,i))});
+  SRV.forEach((x,i)=>{if(srvOk(x))sv.add(new Option(x.name+(state.blk[x.id]?" \u26A0":""),i))});
   sv.value=state.srv;
   sv.onchange=()=>{state.srv=+sv.value;state.fails=0;state.touched=true;hideStuck();mount()};
 
@@ -810,7 +810,7 @@ async function mount(){
   const f=document.createElement("iframe");
   f.setAttribute("allowfullscreen","");
   f.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
-  f.setAttribute("referrerpolicy","origin");
+  f.setAttribute("referrerpolicy","no-referrer");
   f.src=url||"about:blank";
   f.onload=()=>{
     if(state.healthy)return;
@@ -831,25 +831,25 @@ $("#stage").addEventListener("pointerdown",()=>{
 function advance(auto){
   clearTimeout(state.loadTimer);clearTimeout(state.timer);
   hideStuck();
+  const cur=SRV[state.srv];
+  if(cur)state.blk[cur.id]=true;
   const avail=srvOrder();
   if(!avail.length){showStuck();return}
-  const at=avail.indexOf(state.srv);
-  const wrapped=at===avail.length-1;
-
-  if(wrapped){
+  const next=avail.find(i=>i!==state.srv);
+  if(next==null){
     const qi=QL.findIndex(q=>q[0]===state.qual);
     if(qi>=0&&qi<QL.length-1&&state.qual!=="auto"){
       state.qual=QL[qi+1][0];$("#plQual").value=state.qual;
-      state.srv=avail[0];$("#plSrv").value=state.srv;
-      state.fails=0;
+      state.fails=0;state.blk={};
       $("#plHint").textContent="Quality: "+QL[qi+1][1];
+      state.srv=avail[0];$("#plSrv").value=state.srv;
       mount();return;
     }
     state.fails++;
     if(auto&&state.fails>2){showStuck();return}
     state.srv=avail[0];
   }else{
-    state.srv=avail[at+1];
+    state.srv=next;
   }
   $("#plSrv").value=state.srv;
   $("#plHint").textContent="Server: "+SRV[state.srv].name;
@@ -860,16 +860,16 @@ function showStuck(){
   clearTimeout(state.loadTimer);
   $("#plStuck").classList.remove("hidden");
   $("#plLoad").classList.add("off");
-  $("#plHint").textContent="Stuck \u2014 Retry dabao";
+  $("#plHint").textContent="Stuck \u2014 Next dabao";
 }
 function hideStuck(){$("#plStuck").classList.add("hidden")}
 
-$("#stkRetry").onclick=()=>{state.fails=0;state.srv=srvOrder()[0];$("#plSrv").value=state.srv;hideStuck();mount()};
+$("#stkNext").onclick=()=>{state.fails=0;hideStuck();advance(false)};
 $("#stkLower").onclick=()=>{
   const qi=QL.findIndex(q=>q[0]===state.qual);
   state.qual=qi>=0&&qi<QL.length-1?QL[qi+1][0]:"auto";
   $("#plQual").value=state.qual;
-  state.fails=0;hideStuck();mount();
+  state.fails=0;state.blk={};hideStuck();mount();
 };
 $("#stkNew").onclick=()=>window.open(curUrl(),"_blank");
 $("#stkClose").onclick=closePlayer;
@@ -1036,7 +1036,7 @@ function openLive(url,title){
   const f=document.createElement("iframe");
   f.setAttribute("allowfullscreen","");
   f.setAttribute("allow","autoplay; encrypted-media; fullscreen");
-  f.setAttribute("referrerpolicy","origin");
+  f.setAttribute("referrerpolicy","no-referrer");
   f.src=url;
   f.onload=()=>$("#plLoad").classList.add("off");
   $("#plLoad").classList.remove("off");
