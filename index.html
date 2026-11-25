@@ -149,11 +149,11 @@ body.fs.rot #stage{position:fixed;top:50%;left:50%;width:100vh;height:100vw;marg
 .sw button.on{background:#fff;color:#05060a;box-shadow:0 8px 20px rgba(255,255,255,.25)}
 .lv{display:flex;flex-direction:column;gap:10px;padding:12px 16px 20px}
 .lvi{display:flex;gap:11px;align-items:center;padding:12px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--stroke2);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
-.lvi.off{opacity:.55}
+.lvi.off{opacity:.5}
 .lvi .lg{width:36px;height:36px;border-radius:12px;object-fit:contain;background:rgba(255,255,255,.07);flex:0 0 auto}
 .lvi .in2{flex:1;min-width:0}
 .lvi .t{font-size:13px;font-weight:800;line-height:1.25}
-.lvi .c{font-size:11px;color:#9aa1b2;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap}
+.lvi .c{font-size:11px;color:#9aa1b2;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--red2);flex:0 0 auto;box-shadow:0 0 10px var(--red2)}
 .pill{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:7px;background:rgba(255,255,255,.12);border:1px solid var(--stroke2)}
 .pill.live{background:rgba(255,59,48,.22);border-color:rgba(255,59,48,.5);color:#ffb3ae}
@@ -178,7 +178,6 @@ body.fs.rot #stage{position:fixed;top:50%;left:50%;width:100vh;height:100vw;marg
 <link rel="preconnect" href="https://bingeapi.st">
 <link rel="preconnect" href="https://api.themoviedb.org">
 <link rel="preconnect" href="https://api.embedse.com">
-<link rel="preconnect" href="https://www.eporner.com">
 <link rel="dns-prefetch" href="https://vidsrc.sh">
 <link rel="dns-prefetch" href="https://vidfast.vc">
 <link rel="dns-prefetch" href="https://vidcore.org">
@@ -306,7 +305,7 @@ const state={
   set:Object.assign({qual:"1080",aud:"auto",sub:"off"},LS.get("nfx_set",{})),
   item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", sub:"off", touched:false, timer:null, loadTimer:null,
   playId:null, playType:"movie", orig:"", origName:"", audioList:[], tmdb:"", pos:0, posTimer:null,
-  healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveTab:"all"
+  healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveWhen:"live", liveSport:"all"
 };
 
 const SRV=[
@@ -356,6 +355,25 @@ function fetchT(url,ms){
   const ctrl=new AbortController();
   const to=setTimeout(()=>ctrl.abort(),ms);
   return fetch(url,{signal:ctrl.signal,cache:"no-store",referrerPolicy:"no-referrer"}).finally(()=>clearTimeout(to));
+}
+/* CORS proxy se fetch (porn API ke liye) */
+async function proxied(url,ms){
+  const enc=encodeURIComponent(url);
+  const tries=[
+    "https://api.allorigins.win/raw?url="+enc,
+    "https://api.codetabs.com/v1/proxy?quest="+enc,
+    "https://api.allorigins.win/get?url="+enc
+  ];
+  let last;
+  for(const u of tries){
+    try{
+      const r=await fetchT(u,ms||9000);
+      if(!r.ok)continue;
+      const t=await r.text();
+      if(t&&t.trim().length>2)return JSON.parse(t);
+    }catch(e){last=e}
+  }
+  throw last||new Error("proxy fail");
 }
 async function jget(url){
   const c=state.cache[url];
@@ -761,11 +779,8 @@ async function toggleFs(){
     else if(p.webkitRequestFullscreen)p.webkitRequestFullscreen();
   }catch(e){}
   document.body.classList.add("fs");
-  try{
-    await screen.orientation.lock("landscape");
-  }catch(e){
-    document.body.classList.add("rot");
-  }
+  try{ await screen.orientation.lock("landscape"); }
+  catch(e){ document.body.classList.add("rot"); }
 }
 document.addEventListener("fullscreenchange",()=>{
   if(!document.fullscreenElement)document.body.classList.remove("fs","rot");
@@ -891,19 +906,27 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ---------- LIVE ---------- */
-const LIVE_TABS=[["all","All"],["soccer","Football"],["basketball","Basketball"],["american-football","NFL"],["hockey","NHL"],["combat","Boxing / UFC"],["racing","Racing"],["golf","Golf"]];
+const LIVE_SPORTS=[["all","All"],["soccer","Football"],["basketball","Basketball"],["american-football","NFL"],["hockey","NHL"],["combat","Boxing / UFC"],["racing","Racing"],["golf","Golf"]];
+const LIVE_WHEN=[["live","Live now"],["soon","Upcoming"],["all","All"]];
 
 async function renderLive(){
   const m=$("#main");m.innerHTML="";
   m.appendChild(el("h3","sec","Live Sports"));
-  const ch=el("div","chips");ch.style.padding="12px 16px 4px";
+  const wch=el("div","chips");wch.style.padding="12px 16px 4px";
+  const sch=el("div","chips");sch.style.padding="0 16px 6px";
   const box=el("div","lv");
-  m.appendChild(ch);m.appendChild(box);
+  m.appendChild(wch);m.appendChild(sch);m.appendChild(box);
   box.appendChild(el("div","empty","Loading events..."));
-  LIVE_TABS.forEach(([k,label])=>{
-    const b=el("button","chip"+(state.liveTab===k?" on":""),label);
-    b.onclick=()=>{state.liveTab=k;renderLive()};
-    ch.appendChild(b);
+
+  LIVE_WHEN.forEach(([k,label])=>{
+    const b=el("button","chip"+(state.liveWhen===k?" on":""),label);
+    b.onclick=()=>{state.liveWhen=k;renderLive()};
+    wch.appendChild(b);
+  });
+  LIVE_SPORTS.forEach(([k,label])=>{
+    const b=el("button","chip"+(state.liveSport===k?" on":""),label);
+    b.onclick=()=>{state.liveSport=k;renderLive()};
+    sch.appendChild(b);
   });
 
   let d;
@@ -915,33 +938,46 @@ async function renderLive(){
     return;
   }
   let list=(d.matches||[]);
-  if(state.liveTab!=="all")list=list.filter(x=>x.sport===state.liveTab);
-  const rank=x=>x.status==="live"?(x.online_streams>0?0:1):x.status==="upcoming"?2:3;
-  list.sort((a,b)=>rank(a)-rank(b)||(a.start||0)-(b.start||0));
+  if(state.liveSport!=="all")list=list.filter(x=>x.sport===state.liveSport);
+  if(state.liveWhen==="live")list=list.filter(x=>x.status==="live");
+  else if(state.liveWhen==="soon")list=list.filter(x=>x.status==="upcoming");
+  list.sort((a,b)=>(b.online_streams||0)-(a.online_streams||0)||(a.start||0)-(b.start||0));
 
   box.innerHTML="";
   if(!list.length){
-    box.appendChild(el("div","empty","Is category me abhi koi event nahi hai."));
+    box.appendChild(el("div","empty",state.liveWhen==="live"?"Is waqt is category me koi live match nahi hai. Upcoming tab dekho.":"Kuchh nahi mila."));
     return;
   }
   list.forEach(x=>{
     const live=x.status==="live";
-    const playable=!!x.embed_url;
-    const row=el("div","lvi"+(playable?"":" off"));
+    const row=el("div","lvi");
     const t=new Date((x.start||0)*1000);
     const hh=String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");
     const lg=x.home_logo?'<img class="lg" src="'+esc(x.home_logo)+'" loading="lazy">':'<div class="lg"></div>';
     row.innerHTML=lg+
       '<div class="in2"><div class="t">'+esc(x.title)+'</div><div class="c">'+
       '<span class="pill'+(live?" live":"")+'">'+(live?"LIVE":x.status==="upcoming"?hh:"ENDED")+'</span>'+
-      '<span>'+esc(x.league||x.category||"")+'</span></div></div>'+
+      '<span>'+esc(x.league||x.category||"")+'</span>'+
+      (x.online_streams?'<span>'+x.online_streams+' stream</span>':'')+'</div></div>'+
       (live?'<span class="dot"></span>':'');
-    if(playable)row.onclick=()=>openLive(x.embed_url,x.title);
+    row.onclick=()=>openLiveMatch(x.id,x.title);
     box.appendChild(row);
   });
   const rf=el("div","empty",'<button class="retry">Refresh</button>');
   box.appendChild(rf);
   $(".retry",rf).onclick=()=>renderLive();
+}
+
+async function openLiveMatch(id,title){
+  let url="https://embedse.com/m/"+id+"/1";
+  try{
+    const r=await fetchT("https://api.embedse.com/v1/matches/"+id,7000);
+    const d=await r.json();
+    const s=d&&d.match&&d.match.streams&&d.match.streams[0];
+    if(s&&s.embed_url)url=s.embed_url;
+    else if(d&&d.match&&d.match.embed_url)url=d.match.embed_url;
+  }catch(e){}
+  openLive(url,title,true);
 }
 
 /* ---------- PORN ---------- */
@@ -961,8 +997,7 @@ async function renderPorn(){
     try{
       let u="https://www.eporner.com/api/v2/video/search/?per_page=24&page="+page+"&thumbsize=medium&format=json";
       if(q)u+="&query="+encodeURIComponent(q); else u+="&order=top-weekly";
-      const r=await fetchT(u,9000);
-      const d=await r.json();
+      const d=await proxied(u,9000);
       const out=(d.videos||[]).filter(v=>v&&v.id);
       more.textContent="";
       if(!out.length){ if(page===1)g.appendChild(el("div","empty","Kuchh nahi mila.")); done=true; busy=false; return }
@@ -976,7 +1011,9 @@ async function renderPorn(){
       page++;
     }catch(e){
       more.textContent="";
-      if(page===1)g.appendChild(el("div","empty","Load failed. Retry karo."));
+      const b=el("div","empty",'Load failed.<br><button class="retry">Retry</button>');
+      if(page===1)g.appendChild(b);
+      $(".retry",b).onclick=()=>{done=false;load(1)};
     }
     busy=false;
   }
@@ -1037,14 +1074,14 @@ async function renderProfile(){
   });
 }
 
-function openLive(url,title){
+function openLive(url,title,ref){
   clearTimeout(state.timer);clearTimeout(state.loadTimer);clearInterval(state.posTimer);
   state.mode="live";state.healthy=true;state.token++;
   $("#pl").classList.remove("hidden");
   hideStuck();
   document.body.style.overflow="hidden";
   $("#plTitle").textContent=title;
-  $("#plSub").textContent="STREAM";
+  $("#plSub").textContent=ref?"LIVE":"STREAM";
   $("#plSrv").style.display="none";
   $("#plQual").style.display="none";
   $("#plAud").style.display="none";
@@ -1058,12 +1095,12 @@ function openLive(url,title){
   const f=document.createElement("iframe");
   f.setAttribute("allowfullscreen","");
   f.setAttribute("allow","autoplay; encrypted-media; fullscreen");
-  f.setAttribute("referrerpolicy","no-referrer");
+  f.setAttribute("referrerpolicy",ref?"origin":"no-referrer");
   f.src=url;
   f.onload=()=>$("#plLoad").classList.add("off");
   $("#plLoad").classList.remove("off");
   st.insertBefore(f,$("#fsFloat"));
-  $("#plHint").textContent="Stream";
+  $("#plHint").textContent=ref?"Expired aaye to New tab dabao":"Stream";
   history.pushState({pl:1},"");
 }
 
