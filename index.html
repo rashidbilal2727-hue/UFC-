@@ -168,15 +168,15 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 <meta name="theme-color" content="#05060a">
 <title>TUNAmovies</title>
 <link rel="preconnect" href="https://v3-cinemeta.strem.io" crossorigin>
-<link rel="preconnect" href="https://vixsrc.to">
 <link rel="preconnect" href="https://bingeapi.st">
 <link rel="preconnect" href="https://api.themoviedb.org">
 <link rel="dns-prefetch" href="https://vidsrc.sh">
+<link rel="dns-prefetch" href="https://vidfast.vc">
 <link rel="dns-prefetch" href="https://vidcore.org">
 <link rel="dns-prefetch" href="https://vidlink.pro">
 <link rel="dns-prefetch" href="https://embedwave.cc">
-<link rel="dns-prefetch" href="https://vidfast.vc">
 <link rel="dns-prefetch" href="https://vidnest.fun">
+<link rel="dns-prefetch" href="https://vixsrc.to">
 </head>
 <body>
 
@@ -211,10 +211,9 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
     <div id="plStuck" class="hidden">
       <div class="bx g">
         <h3>Stream nahi khul raha</h3>
-        <p>Pehle "New tab" dabao. Wahan chala to sirf yahi server block hai — Next dabao. Wahan bhi block aaye to network ka issue hai.</p>
-        <button class="wide red" id="stkNext">Next server try karo</button>
+        <p>Next dabao dusra server aayega, ya New tab me kholo.</p>
+        <button class="wide red" id="stkNext">Next server</button>
         <button class="wide gh2" id="stkNew">New tab me kholo</button>
-        <button class="wide gh2" id="stkLower">Lower quality try karo</button>
         <button class="wide gh2" id="stkClose">Band karo</button>
       </div>
     </div>
@@ -259,7 +258,6 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
         <option value="tel">Telugu</option>
       </select>
     </div>
-    <div class="fld"><label>Default server</label><select id="setSrv"></select></div>
     <div class="fld"><label>TMDB API key (dubbing + subtitle list ke liye)</label><input id="setKey" placeholder="32 character v3 api key paste karo" autocomplete="off"></div>
     <button class="wide red" id="setSave">Save</button>
     <div class="sub">Key themoviedb.org &gt; Settings &gt; API &gt; "API Key (v3 auth)" se milegi. Token nahi, Key.</div>
@@ -296,19 +294,29 @@ const LS={get:(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 
 const state={
   view:"home", cache:{}, prog:LS.get("nfx_prog",{}), list:LS.get("nfx_list",[]),
-  set:Object.assign({qual:"1080",aud:"auto",srv:"vixsrc",sub:"off"},LS.get("nfx_set",{})),
+  set:Object.assign({qual:"1080",aud:"auto",sub:"off"},LS.get("nfx_set",{})),
   item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", sub:"off", touched:false, timer:null, loadTimer:null,
   playId:null, playType:"movie", orig:"", origName:"", audioList:[], tmdb:"", pos:0, posTimer:null,
   healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}
 };
 
-/* lang:true = server language param leta hai (dubbing) */
+/* Binge hamesha pehla. blocked server last me. */
 const SRV=[
- {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,resume:false,
+ {id:"binge",name:"Binge",need:"imdb",msg:true,
+  u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")},
+ {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,
   u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
- {id:"vidfast",name:"VidFast",need:"imdb",lang:true,resume:true,msg:true,
+ {id:"vidfast",name:"VidFast",need:"imdb",lang:true,msg:true,resume:true,
   u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
- {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:true,resume:true,msg:false,
+ {id:"vidnest",name:"VidNest",need:"imdb",
+  u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)},
+ {id:"vidcore",name:"VidCore",need:"tmdb",
+  u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
+ {id:"vidlink",name:"VidLink",need:"tmdb",
+  u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true&lang="+l},
+ {id:"embedwave",name:"EmbedWave",need:"tmdb",
+  u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?lang="+l},
+ {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:true,resume:true,
   resolve:async c=>{
     const lang=(c.l&&c.l.length===2)?c.l:"en";
     const path=c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e;
@@ -317,17 +325,7 @@ const SRV=[
       if(r.ok){const d=await r.json();if(d&&d.src)return "https://vixsrc.to"+d.src}
     }catch(e){}
     return "https://vixsrc.to/"+path+"?lang="+lang;
-  }},
- {id:"vidcore",name:"VidCore",need:"tmdb",resume:false,
-  u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
- {id:"vidlink",name:"VidLink",need:"tmdb",resume:false,
-  u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true&lang="+l},
- {id:"embedwave",name:"EmbedWave",need:"tmdb",resume:false,
-  u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?lang="+l},
- {id:"vidnest",name:"VidNest",need:"imdb",resume:false,
-  u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)},
- {id:"binge",name:"Binge (ad-free + subs)",need:"imdb",resume:false,msg:true,
-  u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")}
+  }}
 ];
 function aq(c,l){
   let s="";
@@ -427,13 +425,11 @@ function defaultAudio(orig){
 }
 const srvOk=s=>s.need!=="tmdb"||!!state.tmdb;
 const audLabel=v=>{const o=state.audioList.find(x=>x.v===v);return o?o.label:(LNAME[v]||v)};
-const wantsDub=()=>state.aud&&state.aud!==state.orig&&state.aud!=="original";
 
-/* dub chuni hai to language-support servers pehle, block kiye hue last me */
+/* blocked servers sabse aakhir me, baaki apne order me */
 function srvOrder(){
   const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
-  const w=c=>(state.blk[SRV[c].id]?20:0)+(wantsDub()&&!SRV[c].lang?10:0);
-  list.sort((a,b)=>w(a)-w(b));
+  list.sort((a,b)=>(state.blk[SRV[a].id]?1:0)-(state.blk[SRV[b].id]?1:0));
   return list;
 }
 
@@ -687,11 +683,7 @@ function play(type,id,s,e){
   const saved=state.prog[id];
   state.pos=(saved&&saved.s===s&&saved.e===e&&saved.pos)?saved.pos:0;
 
-  const order=srvOrder();
-  let i=SRV.findIndex(x=>x.id===state.set.srv);
-  if(i<0||!srvOk(SRV[i]))i=order[0];
-  state.srv=i;
-
+  state.srv=srvOrder()[0];
   state.playId=id;state.playType=type;
 
   $("#pl").classList.remove("hidden");
@@ -726,12 +718,12 @@ function fillSelects(){
   a.value=state.aud;
   a.onchange=()=>{
     state.aud=a.value;state.touched=true;state.fails=0;
-    $("#plHint").textContent="Audio: "+audLabel(state.aud);
-    const order=srvOrder();
-    if(wantsDub()&&!SRV[state.srv].lang){
-      state.srv=order[0];sv.value=state.srv;
+    if(SRV[state.srv].lang){
+      $("#plHint").textContent="Audio: "+audLabel(state.aud);
+      mount();
+    }else{
+      $("#plHint").textContent="Audio: "+audLabel(state.aud)+" (is server pe nahi)";
     }
-    mount();
   };
 
   const sb=$("#plSubLang");sb.innerHTML="";
@@ -758,7 +750,7 @@ function toggleFs(){
 
 function ctxObj(){
   const s=SRV[state.srv];
-  return {t:state.playType,id:state.playId,s:state.s,e:state.e,q:state.qual,pos:state.pos,tmdb:state.tmdb,resume:s.resume,sub:state.sub};
+  return {t:state.playType,id:state.playId,s:state.s,e:state.e,q:state.qual,pos:state.pos,tmdb:state.tmdb,resume:!!s.resume,sub:state.sub};
 }
 function curUrl(){
   const s=SRV[state.srv];
@@ -767,12 +759,12 @@ function curUrl(){
   return s.u(ctxObj(),l);
 }
 
-const WD=18000;
+const WD=12000;
 function armWatchdog(ms){clearTimeout(state.loadTimer);state.loadTimer=setTimeout(onStuck,ms||WD)}
 function onStuck(){if(state.healthy||state.mode!=="play")return;advance(true)}
 
 function markHealthy(){
-  state.healthy=true;state.fails=0;
+  state.healthy=true;state.fails=0;delete state.blk[SRV[state.srv].id];
   clearTimeout(state.loadTimer);
   $("#plLoad").classList.add("off");
 }
@@ -780,12 +772,7 @@ function markHealthy(){
 window.addEventListener("message",e=>{
   const d=e.data;
   if(!d||typeof d!=="object")return;
-  if(d.source==="bingeapi_player"){
-    if(d.event==="play"||d.event==="time"||d.event==="duration")markHealthy();
-    else if(d.event==="error"){state.healthy=false;advance(true)}
-    return;
-  }
-  if(d.event==="play"||d.event==="time")markHealthy();
+  if(d.event==="play"||d.event==="time"||d.event==="duration")markHealthy();
   else if(d.event==="error"){state.healthy=false;advance(true)}
 });
 
@@ -814,8 +801,8 @@ async function mount(){
   f.src=url||"about:blank";
   f.onload=()=>{
     if(state.healthy)return;
-    $("#plHint").textContent = s.msg ? "Buffering\u2026" : "Chal raha hai? warna Next dabao";
-    if(!s.msg)armWatchdog(12000);
+    $("#plHint").textContent="Chal raha hai? warna Next dabao";
+    if(!s.msg){clearTimeout(state.loadTimer);$("#plLoad").classList.add("off")}
   };
   st.insertBefore(f,$("#fsFloat"));
   state.frame=f;
@@ -825,29 +812,20 @@ async function mount(){
 $("#stage").addEventListener("pointerdown",()=>{
   if(state.mode!=="play")return;
   state.touched=true;
-  if(!state.healthy)armWatchdog(20000);
+  if(!state.healthy&&SRV[state.srv].msg)armWatchdog(15000);
 });
 
 function advance(auto){
-  clearTimeout(state.loadTimer);clearTimeout(state.timer);
+  clearTimeout(state.loadTimer);
   hideStuck();
   const cur=SRV[state.srv];
   if(cur)state.blk[cur.id]=true;
   const avail=srvOrder();
-  if(!avail.length){showStuck();return}
   const next=avail.find(i=>i!==state.srv);
   if(next==null){
-    const qi=QL.findIndex(q=>q[0]===state.qual);
-    if(qi>=0&&qi<QL.length-1&&state.qual!=="auto"){
-      state.qual=QL[qi+1][0];$("#plQual").value=state.qual;
-      state.fails=0;state.blk={};
-      $("#plHint").textContent="Quality: "+QL[qi+1][1];
-      state.srv=avail[0];$("#plSrv").value=state.srv;
-      mount();return;
-    }
     state.fails++;
     if(auto&&state.fails>2){showStuck();return}
-    state.srv=avail[0];
+    state.blk={};state.srv=srvOrder()[0];
   }else{
     state.srv=next;
   }
@@ -865,12 +843,6 @@ function showStuck(){
 function hideStuck(){$("#plStuck").classList.add("hidden")}
 
 $("#stkNext").onclick=()=>{state.fails=0;hideStuck();advance(false)};
-$("#stkLower").onclick=()=>{
-  const qi=QL.findIndex(q=>q[0]===state.qual);
-  state.qual=qi>=0&&qi<QL.length-1?QL[qi+1][0]:"auto";
-  $("#plQual").value=state.qual;
-  state.fails=0;state.blk={};hideStuck();mount();
-};
 $("#stkNew").onclick=()=>window.open(curUrl(),"_blank");
 $("#stkClose").onclick=closePlayer;
 
@@ -1046,19 +1018,16 @@ function openLive(url,title){
 }
 
 function openSettings(){
-  $("#setSrv").innerHTML="";
-  SRV.forEach(x=>$("#setSrv").add(new Option(x.name,x.id)));
   $("#setQual").value=state.set.qual;
   $("#setAud").value=state.set.aud;
   $("#setSub").value=state.set.sub||"off";
-  $("#setSrv").value=state.set.srv;
   $("#setKey").value=LS.get("nfx_tkey","");
   $("#setSheet").classList.remove("hidden");
 }
 $("#setSheet").onclick=e=>{if(e.target.id==="setSheet")$("#setSheet").classList.add("hidden")};
 $("#upSheet").onclick=e=>{if(e.target.id==="upSheet")$("#upSheet").classList.add("hidden")};
 $("#setSave").onclick=()=>{
-  state.set={qual:$("#setQual").value,aud:$("#setAud").value,sub:$("#setSub").value,srv:$("#setSrv").value};
+  state.set={qual:$("#setQual").value,aud:$("#setAud").value,sub:$("#setSub").value};
   LS.set("nfx_set",state.set);
   const k=$("#setKey").value.trim();
   if(k)LS.set("nfx_tkey",k);
