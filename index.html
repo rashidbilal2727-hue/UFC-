@@ -125,6 +125,10 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 #plBot button:active,#plBot .nx:active{transform:scale(.95)}
 #plHint{flex:0 0 auto;font-size:11.5px;color:#9aa1b2;padding:0 5px;white-space:nowrap}
 #plAud,#plSubLang{box-shadow:inset 0 0 0 1px rgba(255,59,48,.6),inset 0 1px 0 rgba(255,255,255,.22);font-weight:800}
+body.fs #plTop,body.fs #plBot{display:none!important}
+body.fs #stage{margin:0;border:0;border-radius:0}
+body.fs #fsFloat{right:12px;bottom:12px;width:44px;height:44px;font-size:15px;opacity:.9}
+body.fs.rot #stage{position:fixed;top:50%;left:50%;width:100vh;height:100vw;margin:0;transform:translate(-50%,-50%) rotate(90deg)}
 .sheet{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end}
 .sheet .in{width:100%;max-height:86vh;overflow-y:auto;border-radius:28px 28px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
 .sheet h3{margin:0 0 14px;font-size:17px}
@@ -143,13 +147,16 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 .sw{display:flex;gap:8px;margin-bottom:16px}
 .sw button{flex:1;padding:11px;border-radius:14px;font-size:13px;font-weight:800;background:rgba(255,255,255,.08);border:1px solid var(--stroke2)}
 .sw button.on{background:#fff;color:#05060a;box-shadow:0 8px 20px rgba(255,255,255,.25)}
-.lv{display:flex;flex-direction:column;gap:10px;padding:14px 16px}
+.lv{display:flex;flex-direction:column;gap:10px;padding:12px 16px 20px}
 .lvi{display:flex;gap:11px;align-items:center;padding:12px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid var(--stroke2);box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
-.lvi .lg{width:38px;height:38px;border-radius:12px;object-fit:contain;background:rgba(255,255,255,.07);flex:0 0 auto}
+.lvi.off{opacity:.55}
+.lvi .lg{width:36px;height:36px;border-radius:12px;object-fit:contain;background:rgba(255,255,255,.07);flex:0 0 auto}
 .lvi .in2{flex:1;min-width:0}
 .lvi .t{font-size:13px;font-weight:800;line-height:1.25}
-.lvi .c{font-size:11px;color:#9aa1b2;margin-top:2px}
+.lvi .c{font-size:11px;color:#9aa1b2;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--red2);flex:0 0 auto;box-shadow:0 0 10px var(--red2)}
+.pill{font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:7px;background:rgba(255,255,255,.12);border:1px solid var(--stroke2)}
+.pill.live{background:rgba(255,59,48,.22);border-color:rgba(255,59,48,.5);color:#ffb3ae}
 .prof{padding:20px 18px 10px;display:flex;gap:14px;align-items:center}
 .prof .big{width:62px;height:62px;border-radius:50%;background:linear-gradient(140deg,#ff3b30,#8b5cf6);display:grid;place-items:center;font-size:26px;font-weight:900;border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 26px rgba(255,59,48,.35)}
 .prof .nm{font-size:17px;font-weight:900}
@@ -170,6 +177,8 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 <link rel="preconnect" href="https://v3-cinemeta.strem.io" crossorigin>
 <link rel="preconnect" href="https://bingeapi.st">
 <link rel="preconnect" href="https://api.themoviedb.org">
+<link rel="preconnect" href="https://api.embedse.com">
+<link rel="preconnect" href="https://www.eporner.com">
 <link rel="dns-prefetch" href="https://vidsrc.sh">
 <link rel="dns-prefetch" href="https://vidfast.vc">
 <link rel="dns-prefetch" href="https://vidcore.org">
@@ -297,10 +306,9 @@ const state={
   set:Object.assign({qual:"1080",aud:"auto",sub:"off"},LS.get("nfx_set",{})),
   item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", sub:"off", touched:false, timer:null, loadTimer:null,
   playId:null, playType:"movie", orig:"", origName:"", audioList:[], tmdb:"", pos:0, posTimer:null,
-  healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}
+  healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveTab:"all"
 };
 
-/* Binge hamesha pehla. blocked server last me. */
 const SRV=[
  {id:"binge",name:"Binge",need:"imdb",msg:true,
   u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")},
@@ -426,7 +434,6 @@ function defaultAudio(orig){
 const srvOk=s=>s.need!=="tmdb"||!!state.tmdb;
 const audLabel=v=>{const o=state.audioList.find(x=>x.v===v);return o?o.label:(LNAME[v]||v)};
 
-/* blocked servers sabse aakhir me, baaki apne order me */
 function srvOrder(){
   const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
   list.sort((a,b)=>(state.blk[SRV[a].id]?1:0)-(state.blk[SRV[b].id]?1:0));
@@ -741,12 +748,28 @@ function fillSelects(){
   $("#fsFloat").onclick=toggleFs;
 }
 
-function toggleFs(){
+async function toggleFs(){
   const p=$("#pl");
-  if(document.fullscreenElement){document.exitFullscreen().catch(()=>{})}
-  else if(p.requestFullscreen){p.requestFullscreen().catch(()=>{})}
-  else if(p.webkitRequestFullscreen){p.webkitRequestFullscreen()}
+  if(document.fullscreenElement||document.webkitFullscreenElement){
+    try{ if(document.exitFullscreen)await document.exitFullscreen() }catch(e){}
+    try{ if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock() }catch(e){}
+    document.body.classList.remove("fs","rot");
+    return;
+  }
+  try{
+    if(p.requestFullscreen)await p.requestFullscreen({navigationUI:"hide"});
+    else if(p.webkitRequestFullscreen)p.webkitRequestFullscreen();
+  }catch(e){}
+  document.body.classList.add("fs");
+  try{
+    await screen.orientation.lock("landscape");
+  }catch(e){
+    document.body.classList.add("rot");
+  }
 }
+document.addEventListener("fullscreenchange",()=>{
+  if(!document.fullscreenElement)document.body.classList.remove("fs","rot");
+});
 
 function ctxObj(){
   const s=SRV[state.srv];
@@ -853,7 +876,9 @@ function closePlayer(){
   $("#pl").classList.add("hidden");
   hideStuck();
   document.body.style.overflow="";
+  document.body.classList.remove("fs","rot");
   if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  try{ if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock() }catch(e){}
   if(state.playId){
     state.prog[state.playId]={t:Date.now(),s:state.s,e:state.e,pos:state.pos,name:$("#plTitle").textContent,poster:(state.item||{}).poster,type:state.playType};
     LS.set("nfx_prog",state.prog);
@@ -865,31 +890,64 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&!$("#pl").classList.contains("hidden"))closePlayer();
 });
 
+/* ---------- LIVE ---------- */
+const LIVE_TABS=[["all","All"],["soccer","Football"],["basketball","Basketball"],["american-football","NFL"],["hockey","NHL"],["combat","Boxing / UFC"],["racing","Racing"],["golf","Golf"]];
+
 async function renderLive(){
   const m=$("#main");m.innerHTML="";
   m.appendChild(el("h3","sec","Live Sports"));
-  const box=el("div","lv");m.appendChild(box);
+  const ch=el("div","chips");ch.style.padding="12px 16px 4px";
+  const box=el("div","lv");
+  m.appendChild(ch);m.appendChild(box);
   box.appendChild(el("div","empty","Loading events..."));
+  LIVE_TABS.forEach(([k,label])=>{
+    const b=el("button","chip"+(state.liveTab===k?" on":""),label);
+    b.onclick=()=>{state.liveTab=k;renderLive()};
+    ch.appendChild(b);
+  });
+
+  let d;
   try{
     const r=await fetchT("https://api.embedse.com/v1/matches?date=today",9000);
-    const d=await r.json();
-    const list=(d.matches||[]).filter(x=>x.embed_url);
-    box.innerHTML="";
-    if(!list.length){box.appendChild(el("div","empty","Abhi koi streamed event nahi hai."));return}
-    list.forEach(x=>{
-      const row=el("div","lvi");
-      row.innerHTML=(x.home_logo?'<img class="lg" src="'+esc(x.home_logo)+'" loading="lazy">':'<div class="lg"></div>')+
-        '<div class="in2"><div class="t">'+esc(x.title)+'</div><div class="c">'+esc(x.league||x.category||"")+'</div></div>'+
-        (x.status==="live"?'<span class="dot"></span>':'');
-      row.onclick=()=>openLive(x.embed_url,x.title);
-      box.appendChild(row);
-    });
-  }catch(e){box.innerHTML="";box.appendChild(el("div","empty","Live feed unavailable."))}
+    d=await r.json();
+  }catch(e){
+    box.innerHTML="";box.appendChild(el("div","empty","Live feed unavailable."));
+    return;
+  }
+  let list=(d.matches||[]);
+  if(state.liveTab!=="all")list=list.filter(x=>x.sport===state.liveTab);
+  const rank=x=>x.status==="live"?(x.online_streams>0?0:1):x.status==="upcoming"?2:3;
+  list.sort((a,b)=>rank(a)-rank(b)||(a.start||0)-(b.start||0));
+
+  box.innerHTML="";
+  if(!list.length){
+    box.appendChild(el("div","empty","Is category me abhi koi event nahi hai."));
+    return;
+  }
+  list.forEach(x=>{
+    const live=x.status==="live";
+    const playable=!!x.embed_url;
+    const row=el("div","lvi"+(playable?"":" off"));
+    const t=new Date((x.start||0)*1000);
+    const hh=String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");
+    const lg=x.home_logo?'<img class="lg" src="'+esc(x.home_logo)+'" loading="lazy">':'<div class="lg"></div>';
+    row.innerHTML=lg+
+      '<div class="in2"><div class="t">'+esc(x.title)+'</div><div class="c">'+
+      '<span class="pill'+(live?" live":"")+'">'+(live?"LIVE":x.status==="upcoming"?hh:"ENDED")+'</span>'+
+      '<span>'+esc(x.league||x.category||"")+'</span></div></div>'+
+      (live?'<span class="dot"></span>':'');
+    if(playable)row.onclick=()=>openLive(x.embed_url,x.title);
+    box.appendChild(row);
+  });
+  const rf=el("div","empty",'<button class="retry">Refresh</button>');
+  box.appendChild(rf);
+  $(".retry",rf).onclick=()=>renderLive();
 }
 
+/* ---------- PORN ---------- */
 async function renderPorn(){
   const m=$("#main");m.innerHTML="";
-  m.appendChild(el("h3","sec","Porn Videos"));
+  m.appendChild(el("h3","sec","Videos"));
   const sr=el("div","srch g");
   sr.innerHTML='<input id="pq" placeholder="Search videos..."><button class="btn ghost" id="pgo" style="padding:0 16px">&#128269;</button>';
   m.appendChild(sr);
@@ -900,35 +958,27 @@ async function renderPorn(){
   async function load(reset){
     if(busy||done)return;busy=true;
     if(reset){g.innerHTML="";page=1;done=false;more.textContent="Loading..."}
-    const out=[];
     try{
-      const u="https://api.redtube.com/?data=redtube.Videos.searchVideos&output=json&thumbsize=medium&page="+page+"&search="+encodeURIComponent(q);
+      let u="https://www.eporner.com/api/v2/video/search/?per_page=24&page="+page+"&thumbsize=medium&format=json";
+      if(q)u+="&query="+encodeURIComponent(q); else u+="&order=top-weekly";
       const r=await fetchT(u,9000);
       const d=await r.json();
-      (d.videos||[]).forEach(o=>{
-        const v=o.video||o;
-        if(!v.video_id)return;
-        out.push({id:v.video_id,title:v.title,thumb:v.thumb,emb:"https://embed.redtube.com/?id="+v.video_id+"&autoplay=true"});
+      const out=(d.videos||[]).filter(v=>v&&v.id);
+      more.textContent="";
+      if(!out.length){ if(page===1)g.appendChild(el("div","empty","Kuchh nahi mila.")); done=true; busy=false; return }
+      out.forEach(v=>{
+        const th=(v.default_thumb&&v.default_thumb.src)||"";
+        const c=el("div");
+        c.innerHTML='<div class="ph"><img loading="lazy" decoding="async" src="'+esc(th||ph(320,180))+'"><span class="du">'+esc(v.length_min||"")+'</span></div><div class="t">'+esc(v.title)+'</div>';
+        c.onclick=()=>openLive(v.embed||("https://www.eporner.com/embed/"+v.id+"/"),v.title);
+        g.appendChild(c);
       });
-    }catch(e){}
-    if(!out.length){
-      try{
-        const r2=await fetchT("https://api.eporner.com/v2/videos/search?query="+encodeURIComponent(q)+"&per_page=24&page="+page+"&format=json",9000);
-        const d2=await r2.json();
-        (d2.videos||[]).forEach(v=>{
-          out.push({id:v.id,title:v.title,thumb:(v.default_thumb&&v.default_thumb.src)||"",emb:"https://www.eporner.com/embed/"+v.id+"/"});
-        });
-      }catch(e){}
+      page++;
+    }catch(e){
+      more.textContent="";
+      if(page===1)g.appendChild(el("div","empty","Load failed. Retry karo."));
     }
-    more.textContent="";
-    if(!out.length){ if(page===1)g.appendChild(el("div","empty","Kuchh nahi mila.")); done=true; busy=false; return }
-    out.forEach(v=>{
-      const c=el("div");
-      c.innerHTML='<div class="ph"><img loading="lazy" decoding="async" src="'+esc(v.thumb||ph(320,180))+'"><span class="du">&#9654;</span></div><div class="t">'+esc(v.title)+'</div>';
-      c.onclick=()=>openLive(v.emb,v.title);
-      g.appendChild(c);
-    });
-    page++;busy=false;
+    busy=false;
   }
   $("#pgo").onclick=()=>{q=$("#pq").value.trim();load(1)};
   $("#pq").onkeydown=e=>{if(e.key==="Enter"){q=e.target.value.trim();load(1)}};
