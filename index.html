@@ -112,11 +112,13 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 #stage{flex:1;min-height:0;position:relative;background:#000;display:flex;margin:0 10px;border-radius:22px;overflow:hidden;border:1px solid var(--stroke2)}
 #stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
 #tap{position:absolute;left:0;right:0;top:0;height:72%;z-index:5}
-#ctrl{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;gap:36px;pointer-events:none;opacity:0;transition:opacity .18s}
+#ctrl{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px;pointer-events:none;opacity:0;transition:opacity .18s}
 #ctrl.on{opacity:1;pointer-events:auto}
-#ctrl button{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:#fff;background:rgba(15,17,24,.42);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);border:1px solid rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 12px 28px rgba(0,0,0,.55)}
+#ctrl button{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.32);border:0;box-shadow:0 2px 12px rgba(0,0,0,.45);transition:transform .1s}
 #ctrl button:active{transform:scale(.9)}
-#ctrl .pl2{width:70px;height:70px;font-size:24px}
+#ctrl button svg{width:32px;height:32px;display:block}
+#ctrl .pl2{width:64px;height:64px}
+#ctrl .pl2 svg{width:30px;height:30px}
 #plStuck{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(5,6,10,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 #plStuck .bx{width:100%;max-width:340px;text-align:center;padding:20px;border-radius:24px}
 #plStuck h3{margin:0 0 6px;font-size:17px}
@@ -132,7 +134,6 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 #plBot button:active,#plBot .nx:active{transform:scale(.95)}
 #plHint{flex:0 0 auto;font-size:11.5px;color:#9aa1b2;padding:0 5px;white-space:nowrap}
 #plAud,#plSubLang{box-shadow:inset 0 0 0 1px rgba(255,59,48,.6),inset 0 1px 0 rgba(255,255,255,.22);font-weight:800}
-/* FULLSCREEN — stage poori screen bharta hai */
 body.fs #plTop,body.fs #plBot{display:none!important}
 body.fs #stage{position:fixed;inset:0;width:100vw;height:100dvh;margin:0;border:0;border-radius:0;z-index:1}
 body.fs #fsFloat{display:none}
@@ -227,9 +228,15 @@ body.fs #plStuck{position:fixed;z-index:12}
   <div id="stage">
     <div id="tap"></div>
     <div id="ctrl">
-      <button id="cBack">&#9194;</button>
-      <button id="cPlay" class="pl2">&#9654;</button>
-      <button id="cFwd">&#9193;</button>
+      <button id="cBack" aria-label="Back 10">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 5V2.5L7.5 5.5l4 3V6a6.2 6.2 0 1 1-6.3 6.2"/><text x="12.4" y="16" font-size="6.6" font-weight="800" fill="currentColor" stroke="none" text-anchor="middle" font-family="system-ui">10</text></svg>
+      </button>
+      <button id="cPlay" class="pl2" aria-label="Play / Pause">
+        <svg id="cPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6L19 12z"/></svg>
+      </button>
+      <button id="cFwd" aria-label="Forward 10">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 5V2.5l4 3-4 3V6a6.2 6.2 0 1 0 6.3 6.2"/><text x="11.6" y="16" font-size="6.6" font-weight="800" fill="currentColor" stroke="none" text-anchor="middle" font-family="system-ui">10</text></svg>
+      </button>
     </div>
     <button id="fsFloat">&#9974;</button>
     <div id="plStuck" class="hidden">
@@ -753,12 +760,12 @@ function fillSelects(){
   const sv=$("#plSrv");sv.innerHTML="";
   SRV.forEach((x,i)=>{if(srvOk(x))sv.add(new Option(x.name+(state.blk[x.id]?" \u26A0":""),i))});
   sv.value=state.srv;
-  sv.onchange=()=>{state.srv=+sv.value;state.fails=0;state.touched=true;hideStuck();mount()};
+  sv.onchange=()=>{state.srv=+sv.value;state.fails=0;state.blk={};state.touched=true;hideStuck();mount(true)};
 
   const q=$("#plQual");q.innerHTML="";
   QL.forEach(([v,l])=>q.add(new Option(l,v)));
   q.value=state.qual;
-  q.onchange=()=>{state.qual=q.value;state.fails=0;state.touched=true;mount()};
+  q.onchange=()=>{state.qual=q.value;state.fails=0;state.touched=true;mount(true)};
 
   const a=$("#plAud");a.innerHTML="";
   (state.audioList.length?state.audioList:buildAudio(state.orig)).forEach(o=>a.add(new Option(o.label+(o.orig?" \u2022 original":""),o.v)));
@@ -767,9 +774,9 @@ function fillSelects(){
     state.aud=a.value;state.touched=true;state.fails=0;
     const langSrv=srvOrder()[0];
     if(SRV[langSrv].lang){
-      if(langSrv!==state.srv){state.srv=langSrv;sv.value=state.srv}
+      if(langSrv!==state.srv){state.srv=langSrv;sv.value=state.srv;state.blk={}}
       $("#plHint").textContent="Audio: "+audLabel(state.aud);
-      mount();
+      mount(true);
     }else{
       $("#plHint").textContent="Audio: "+audLabel(state.aud)+" (is server pe nahi)";
     }
@@ -781,7 +788,7 @@ function fillSelects(){
   sb.onchange=()=>{
     state.sub=sb.value;state.touched=true;
     $("#plHint").textContent="Subs: "+sb.options[sb.selectedIndex].text;
-    mount();
+    mount(true);
   };
 
   $("#plNext").onclick=()=>{state.touched=true;advance(false)};
@@ -790,7 +797,6 @@ function fillSelects(){
   $("#fsFloat").onclick=toggleFs;
 }
 
-/* ---------- FULLSCREEN ---------- */
 function fsLayout(){document.body.classList.toggle("portrait",window.innerHeight>window.innerWidth)}
 async function toggleFs(){
   const p=$("#pl");
@@ -814,11 +820,12 @@ document.addEventListener("fullscreenchange",()=>{
   if(!document.fullscreenElement)document.body.classList.remove("fs","portrait");
 });
 
-/* ---------- TAP CONTROLS ---------- */
 let ctrlT;
+const PLAY_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6L19 12z"/></svg>';
+const PAUSE_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg>';
 function showCtrl(){
   const c=$("#ctrl");c.classList.add("on");
-  clearTimeout(ctrlT);ctrlT=setTimeout(()=>c.classList.remove("on"),2000);
+  clearTimeout(ctrlT);ctrlT=setTimeout(()=>c.classList.remove("on"),2200);
 }
 function postFrame(m){
   try{const f=state.frame;if(f&&f.contentWindow)f.contentWindow.postMessage(m,"*")}catch(e){}
@@ -830,13 +837,14 @@ function seek(d){
   postFrame({method:"seek",value:d});
   postFrame({event:"command",func:"seek",args:[d]});
   const s=SRV[state.srv];
-  if(s&&s.resume)mount();
+  if(s&&s.resume)mount(true);
   showCtrl();
 }
 let playing=true;
 function togglePlay(){
+  if(!state.healthy){mount(true);playing=true;$("#cPlayIcon").outerHTML=PAUSE_SVG;showCtrl();return}
   playing=!playing;
-  $("#cPlay").innerHTML=playing?"&#9654;":"&#10073;&#10073;";
+  $("#cPlayIcon").outerHTML=playing?PAUSE_SVG:PLAY_SVG;
   postFrame({event:playing?"play":"pause"});
   postFrame({method:playing?"play":"pause"});
   postFrame({event:"command",func:playing?"play":"pause"});
@@ -858,7 +866,7 @@ function curUrl(){
   return s.u(ctxObj(),l);
 }
 
-const WD=12000;
+const WD=15000;
 function armWatchdog(ms){clearTimeout(state.loadTimer);state.loadTimer=setTimeout(onStuck,ms||WD)}
 function onStuck(){if(state.healthy||state.mode!=="play")return;advance(true)}
 
@@ -866,6 +874,7 @@ function markHealthy(){
   state.healthy=true;state.fails=0;delete state.blk[SRV[state.srv].id];
   clearTimeout(state.loadTimer);
   $("#plLoad").classList.add("off");
+  $("#plHint").textContent="Tap video for controls";
 }
 
 window.addEventListener("message",e=>{
@@ -875,14 +884,13 @@ window.addEventListener("message",e=>{
   else if(d.event==="error"){state.healthy=false;advance(true)}
 });
 
-async function mount(){
+async function mount(reuse){
   clearTimeout(state.loadTimer);clearInterval(state.posTimer);
   state.healthy=false;
   hideStuck();
   const my=++state.token;
   const s=SRV[state.srv];
   const st=$("#stage");
-  st.querySelectorAll("iframe").forEach(f=>f.remove());
   $("#plLoad").classList.remove("off");
   $("#plHint").textContent="Connecting\u2026";
   armWatchdog();
@@ -904,26 +912,32 @@ async function mount(){
     if(my!==state.token)return;
   }
 
-  const f=document.createElement("iframe");
-  f.setAttribute("allowfullscreen","");
-  f.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
-  f.setAttribute("referrerpolicy","no-referrer");
-  f.src=url||"about:blank";
+  let f=$("#stage iframe");
+  const isNew=!f;
+  if(f){ try{ f.src="about:blank" }catch(e){} }
+  else{
+    f=document.createElement("iframe");
+    f.setAttribute("allowfullscreen","");
+    f.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
+    f.setAttribute("referrerpolicy","no-referrer");
+    st.insertBefore(f,$("#tap"));
+  }
   f.onload=()=>{
     if(state.healthy)return;
     $("#plHint").textContent="Chal raha hai? warna Next dabao";
     if(!s.msg){clearTimeout(state.loadTimer);$("#plLoad").classList.add("off")}
   };
-  st.insertBefore(f,$("#tap"));
+  f.src=url||"about:blank";
   state.frame=f;
-  playing=true;$("#cPlay").innerHTML="&#9654;";
+  playing=true;$("#cPlayIcon").outerHTML=PAUSE_SVG;
+  $("#ctrl").classList.remove("on");
   state.posTimer=setInterval(()=>{if(!document.hidden)state.pos++},1000);
 }
 
 $("#stage").addEventListener("pointerdown",()=>{
   if(state.mode!=="play")return;
   state.touched=true;
-  if(!state.healthy&&SRV[state.srv].msg)armWatchdog(15000);
+  if(!state.healthy&&SRV[state.srv].msg)armWatchdog(18000);
 });
 
 function advance(auto){
@@ -942,7 +956,7 @@ function advance(auto){
   }
   $("#plSrv").value=state.srv;
   $("#plHint").textContent="Server: "+SRV[state.srv].name;
-  mount();
+  mount(true);
 }
 
 function showStuck(){
@@ -979,7 +993,6 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&!$("#pl").classList.contains("hidden"))closePlayer();
 });
 
-/* ---------- LIVE (naye tab me) ---------- */
 const LIVE_SPORTS=[["all","All"],["soccer","Football"],["basketball","Basketball"],["american-football","NFL"],["hockey","NHL"],["combat","Boxing / UFC"],["racing","Racing"],["golf","Golf"]];
 const LIVE_WHEN=[["live","Live now"],["soon","Upcoming"],["all","All"]];
 
@@ -1054,7 +1067,6 @@ async function openLiveMatch(id,title){
   window.open(url,"_blank");
 }
 
-/* ---------- PORN (naye tab me) ---------- */
 async function renderPorn(){
   const m=$("#main");m.innerHTML="";
   m.appendChild(el("h3","sec","Videos"));
