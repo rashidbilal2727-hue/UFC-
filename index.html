@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -332,14 +331,15 @@ const state={
   healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveWhen:"live", liveSport:"all", playing:false
 };
 
-/* lang:true = ye server audio language param leta hai */
+/* need = kaun sa id chahiye: binge/vidnest imdb, baaki tmdb
+   lang = ye server audio language param leta hai */
 const SRV=[
  {id:"binge",name:"Binge",need:"imdb",msg:true,
   u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")},
- {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,
-  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
- {id:"vidfast",name:"VidFast",need:"imdb",lang:true,msg:true,resume:true,
-  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
+ {id:"vidsrc",name:"VidSrc",need:"tmdb",lang:true,
+  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
+ {id:"vidfast",name:"VidFast",need:"tmdb",lang:true,msg:true,resume:true,
+  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
  {id:"vidnest",name:"VidNest",need:"imdb",
   u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)},
  {id:"vidcore",name:"VidCore",need:"tmdb",lang:true,
@@ -473,11 +473,10 @@ function defaultAudio(orig){
   if(orig==="en")return "en";
   return orig||"original";
 }
-const srvOk=s=>s.need!=="tmdb"||!!state.tmdb;
+const srvOk=s=>s.need==="tmdb"?!state.tmdb:!!state.playId;
 const audLabel=v=>{const o=state.audioList.find(x=>x.v===v);return o?o.label:(LNAME[v]||v)};
 const wantDub=()=>!!state.aud&&state.aud!=="original"&&state.aud!=="auto"&&state.aud!==state.orig;
 
-/* dub chuni ho to language-support wale server pehle, phir baaki */
 function srvOrder(){
   const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
   const dub=wantDub();
@@ -745,9 +744,10 @@ function play(type,id,s,e){
   const saved=state.prog[id];
   state.pos=(saved&&saved.s===s&&saved.e===e&&saved.pos)?saved.pos:0;
 
-  const ls=wantDub()?langServer():null;
-  state.srv=ls!=null?ls:srvOrder()[0];
   state.playId=id;state.playType=type;
+  /* shuruaat hamesha Binge se — jo chalta hai. Language badalne par hi server badlega */
+  const bi=SRV.findIndex(x=>x.id==="binge");
+  state.srv=(bi>=0&&srvOk(SRV[bi]))?bi:srvOrder()[0];
 
   $("#pl").classList.remove("hidden");
   $("#plStuck").classList.add("hidden");
@@ -776,7 +776,7 @@ function fillSelects(){
   q.value=state.qual;
   q.onchange=()=>{state.qual=q.value;state.fails=0;state.touched=true;mount()};
 
-  /* ---- AUDIO: language badalte hi us language wale server par jao ---- */
+  /* AUDIO — dub chunte hi language-wale server par, warna hi rahega */
   const a=$("#plAud");a.innerHTML="";
   (state.audioList.length?state.audioList:buildAudio(state.orig)).forEach(o=>a.add(new Option(o.label+(o.orig?" \u2022 original":""),o.v)));
   a.value=state.aud;
@@ -880,7 +880,7 @@ function curUrl(){
   return s.u(ctxObj(),l);
 }
 
-const WD=12000;
+const WD=11000;
 function armWatchdog(ms){clearTimeout(state.loadTimer);state.loadTimer=setTimeout(onStuck,ms||WD)}
 function onStuck(){if(state.healthy||state.mode!=="play")return;advance(true)}
 
@@ -917,11 +917,16 @@ async function mount(){
   }catch(e){}
   if(my!==state.token)return;
 
+  if(!url){
+    $("#plHint").textContent="URL nahi bana \u2014 Next dabao";
+    return;
+  }
+
   const f=document.createElement("iframe");
   f.setAttribute("allowfullscreen","");
   f.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
   f.setAttribute("referrerpolicy","no-referrer");
-  f.src=url||"about:blank";
+  f.src=url;
   f.onload=()=>{
     if(state.healthy)return;
     $("#plHint").textContent="Chal raha hai? warna Next dabao";
@@ -991,7 +996,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&!$("#pl").classList.contains("hidden"))closePlayer();
 });
 
-/* ---------- LIVE (naye tab me) ---------- */
+/* ---------- LIVE ---------- */
 const LIVE_SPORTS=[["all","All"],["soccer","Football"],["basketball","Basketball"],["american-football","NFL"],["hockey","NHL"],["combat","Boxing / UFC"],["racing","Racing"],["golf","Golf"]];
 const LIVE_WHEN=[["live","Live now"],["soon","Upcoming"],["all","All"]];
 
@@ -1066,7 +1071,7 @@ async function openLiveMatch(id,title){
   window.open(url,"_blank");
 }
 
-/* ---------- PORN (naye tab me) ---------- */
+/* ---------- PORN ---------- */
 async function renderPorn(){
   const m=$("#main");m.innerHTML="";
   m.appendChild(el("h3","sec","Videos"));
