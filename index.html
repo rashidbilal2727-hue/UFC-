@@ -114,7 +114,7 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 #tap{position:absolute;left:0;right:0;top:0;height:72%;z-index:5}
 #ctrl{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px;pointer-events:none;opacity:0;transition:opacity .18s}
 #ctrl.on{opacity:1;pointer-events:auto}
-#ctrl button{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.32);border:0;box-shadow:0 2px 12px rgba(0,0,0,.45);transition:transform .1s}
+#ctrl button{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.34);border:0;box-shadow:0 2px 12px rgba(0,0,0,.5);transition:transform .1s}
 #ctrl button:active{transform:scale(.9)}
 #ctrl button svg{width:32px;height:32px;display:block}
 #ctrl .pl2{width:64px;height:64px}
@@ -149,6 +149,7 @@ body.fs #plStuck{position:fixed;z-index:12}
 .red{background:linear-gradient(150deg,#ff3b30,#c81e14);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 12px 26px rgba(255,59,48,.35)}
 .gh2{background:rgba(255,255,255,.1);border:1px solid var(--stroke2);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
 .sub{font-size:12px;color:#9aa1b2;text-align:center;margin-top:12px;line-height:1.5}
+.sub a{color:#8bb4ff;text-decoration:underline}
 .err{color:#ff8b83;font-size:12.5px;margin-bottom:10px}
 #auth{position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(5,6,10,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 #auth .box{width:100%;max-width:360px;padding:24px;border-radius:26px}
@@ -184,18 +185,18 @@ body.fs #plStuck{position:fixed;z-index:12}
 <meta name="theme-color" content="#05060a">
 <title>TUNAmovies</title>
 <link rel="preconnect" href="https://v3-cinemeta.strem.io" crossorigin>
-<link rel="preconnect" href="https://bingeapi.st">
+<link rel="preconnect" href="https://vidfast.vc">
+<link rel="preconnect" href="https://vidsrc.sh">
 <link rel="preconnect" href="https://api.themoviedb.org">
 <link rel="preconnect" href="https://api.embedse.com">
 <link rel="preconnect" href="https://www.eporner.com">
 <link rel="dns-prefetch" href="https://static-ca-cdn.eporner.com">
-<link rel="dns-prefetch" href="https://vidsrc.sh">
-<link rel="dns-prefetch" href="https://vidfast.vc">
 <link rel="dns-prefetch" href="https://vidcore.org">
 <link rel="dns-prefetch" href="https://vidlink.pro">
 <link rel="dns-prefetch" href="https://embedwave.cc">
 <link rel="dns-prefetch" href="https://vidnest.fun">
 <link rel="dns-prefetch" href="https://vixsrc.to">
+<link rel="dns-prefetch" href="https://bingeapi.st">
 </head>
 <body>
 
@@ -241,7 +242,7 @@ body.fs #plStuck{position:fixed;z-index:12}
     <button id="fsFloat">&#9974;</button>
     <div id="plStuck" class="hidden">
       <div class="bx g">
-        <h3>Stream nahi khul raha</h3>
+        <h3>Ye server nahi chala</h3>
         <p>Next dabao dusra server aayega, ya New tab me kholo.</p>
         <button class="wide red" id="stkNext">Next server</button>
         <button class="wide gh2" id="stkNew">New tab me kholo</button>
@@ -256,7 +257,7 @@ body.fs #plStuck{position:fixed;z-index:12}
     <select id="plSubLang"></select>
     <button class="nx" id="plNext">Next &#9654;</button>
     <button class="gh" id="plNew">New tab</button>
-    <span id="plHint">If black, tap Next</span>
+    <span id="plHint">Tap video</span>
   </div>
 </div>
 
@@ -291,7 +292,7 @@ body.fs #plStuck{position:fixed;z-index:12}
     </div>
     <div class="fld"><label>TMDB API key (dubbing + subtitle list ke liye)</label><input id="setKey" placeholder="32 character v3 api key paste karo" autocomplete="off"></div>
     <button class="wide red" id="setSave">Save</button>
-    <div class="sub">Key themoviedb.org &gt; Settings &gt; API &gt; "API Key (v3 auth)" se milegi. Token nahi, Key.</div>
+    <div class="sub">Key yahan se lo: <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">themoviedb.org/settings/api</a> &mdash; free account banao, phir "API Key (v3 auth)" copy karo. Token nahi, Key.</div>
   </div>
 </div>
 
@@ -331,22 +332,11 @@ const state={
   healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveWhen:"live", liveSport:"all"
 };
 
+/* lang:2 = language param khud support karta hai (best for dubs) */
 const SRV=[
- {id:"binge",name:"Binge",need:"imdb",msg:true,
-  u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")},
- {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,
-  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
- {id:"vidfast",name:"VidFast",need:"imdb",lang:true,msg:true,resume:true,
+ {id:"vidfast",name:"VidFast",need:"imdb",lang:2,msg:true,resume:true,
   u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
- {id:"vidnest",name:"VidNest",need:"imdb",
-  u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)},
- {id:"vidcore",name:"VidCore",need:"tmdb",
-  u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
- {id:"vidlink",name:"VidLink",need:"tmdb",
-  u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true&lang="+l},
- {id:"embedwave",name:"EmbedWave",need:"tmdb",
-  u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?lang="+l},
- {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:true,resume:true,
+ {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:2,resume:true,
   resolve:async c=>{
     const lang=(c.l&&c.l.length===2)?c.l:"en";
     const path=c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e;
@@ -355,7 +345,19 @@ const SRV=[
       if(r.ok){const d=await r.json();if(d&&d.src)return "https://vixsrc.to"+d.src}
     }catch(e){}
     return "https://vixsrc.to/"+path+"?lang="+lang;
-  }}
+  }},
+ {id:"vidsrc",name:"VidSrc",need:"imdb",lang:1,
+  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
+ {id:"binge",name:"Binge",need:"imdb",msg:true,
+  u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")},
+ {id:"vidcore",name:"VidCore",need:"tmdb",lang:1,
+  u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
+ {id:"vidlink",name:"VidLink",need:"tmdb",lang:1,
+  u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true&lang="+l},
+ {id:"embedwave",name:"EmbedWave",need:"tmdb",lang:1,
+  u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?lang="+l},
+ {id:"vidnest",name:"VidNest",need:"imdb",
+  u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)}
 ];
 function aq(c,l){
   let s="";
@@ -479,12 +481,21 @@ function srvOrder(){
   const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
   list.sort((a,b)=>{
     const A=SRV[a],B=SRV[b];
-    const ba=state.blk[A.id]?1:0, bb=state.blk[B.id]?1:0;
-    if(ba!==bb)return ba-bb;
-    if(dub)return (B.lang?1:0)-(A.lang?1:0);
+    const fa=state.blk[A.id]||0, fb=state.blk[B.id]||0;
+    if(dub){
+      const la=A.lang||0, lb=B.lang||0;
+      if(lb!==la)return lb-la;
+    }
+    if(fa!==fb)return fa-fb;
     return 0;
   });
   return list;
+}
+function bestLangSrv(){
+  const dub=!!state.aud&&state.aud!=="original"&&state.aud!=="auto";
+  const list=srvOrder();
+  if(dub){const l=list.find(i=>SRV[i].lang);if(l!=null)return l}
+  return list[0];
 }
 
 function go(v){
@@ -730,14 +741,14 @@ function play(type,id,s,e){
   const name=it?it.name:(state.prog[id]&&state.prog[id].name)||"Playing";
   state.item=it||{id,name,poster:(state.prog[id]||{}).poster};
   state.s=s;state.e=e;state.touched=false;state.fails=0;state.healthy=false;
-  state.mode="play";
+  state.mode="play";state.blk={};
   state.qual=state.set.qual;
   state.aud=defaultAudio(state.orig);
   state.sub=state.set.sub||"off";
   const saved=state.prog[id];
   state.pos=(saved&&saved.s===s&&saved.e===e&&saved.pos)?saved.pos:0;
 
-  state.srv=srvOrder()[0];
+  state.srv=bestLangSrv();
   state.playId=id;state.playType=type;
 
   $("#pl").classList.remove("hidden");
@@ -760,26 +771,28 @@ function fillSelects(){
   const sv=$("#plSrv");sv.innerHTML="";
   SRV.forEach((x,i)=>{if(srvOk(x))sv.add(new Option(x.name+(state.blk[x.id]?" \u26A0":""),i))});
   sv.value=state.srv;
-  sv.onchange=()=>{state.srv=+sv.value;state.fails=0;state.blk={};state.touched=true;hideStuck();mount(true)};
+  sv.onchange=()=>{state.srv=+sv.value;state.fails=0;state.touched=true;hideStuck();mount()};
 
   const q=$("#plQual");q.innerHTML="";
   QL.forEach(([v,l])=>q.add(new Option(l,v)));
   q.value=state.qual;
-  q.onchange=()=>{state.qual=q.value;state.fails=0;state.touched=true;mount(true)};
+  q.onchange=()=>{state.qual=q.value;state.fails=0;state.touched=true;mount()};
 
   const a=$("#plAud");a.innerHTML="";
   (state.audioList.length?state.audioList:buildAudio(state.orig)).forEach(o=>a.add(new Option(o.label+(o.orig?" \u2022 original":""),o.v)));
   a.value=state.aud;
   a.onchange=()=>{
     state.aud=a.value;state.touched=true;state.fails=0;
-    const langSrv=srvOrder()[0];
-    if(SRV[langSrv].lang){
-      if(langSrv!==state.srv){state.srv=langSrv;sv.value=state.srv;state.blk={}}
+    const want=(state.aud!=="original"&&state.aud!==state.orig);
+    if(want){
+      const l=bestLangSrv();
+      if(l!=null&&!SRV[l].lang){$("#plHint").textContent="Is language ke liye koi server nahi"}
+      else if(l!=null&&l!==state.srv){state.srv=l;sv.value=state.srv}
       $("#plHint").textContent="Audio: "+audLabel(state.aud);
-      mount(true);
     }else{
-      $("#plHint").textContent="Audio: "+audLabel(state.aud)+" (is server pe nahi)";
+      $("#plHint").textContent="Audio: "+audLabel(state.aud);
     }
+    mount();
   };
 
   const sb=$("#plSubLang");sb.innerHTML="";
@@ -788,7 +801,7 @@ function fillSelects(){
   sb.onchange=()=>{
     state.sub=sb.value;state.touched=true;
     $("#plHint").textContent="Subs: "+sb.options[sb.selectedIndex].text;
-    mount(true);
+    mount();
   };
 
   $("#plNext").onclick=()=>{state.touched=true;advance(false)};
@@ -825,7 +838,7 @@ const PLAY_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.
 const PAUSE_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg>';
 function showCtrl(){
   const c=$("#ctrl");c.classList.add("on");
-  clearTimeout(ctrlT);ctrlT=setTimeout(()=>c.classList.remove("on"),2200);
+  clearTimeout(ctrlT);ctrlT=setTimeout(()=>c.classList.remove("on"),2400);
 }
 function postFrame(m){
   try{const f=state.frame;if(f&&f.contentWindow)f.contentWindow.postMessage(m,"*")}catch(e){}
@@ -837,17 +850,17 @@ function seek(d){
   postFrame({method:"seek",value:d});
   postFrame({event:"command",func:"seek",args:[d]});
   const s=SRV[state.srv];
-  if(s&&s.resume)mount(true);
+  if(s&&s.resume)mount();
   showCtrl();
 }
-let playing=true;
 function togglePlay(){
-  if(!state.healthy){mount(true);playing=true;$("#cPlayIcon").outerHTML=PAUSE_SVG;showCtrl();return}
-  playing=!playing;
-  $("#cPlayIcon").outerHTML=playing?PAUSE_SVG:PLAY_SVG;
-  postFrame({event:playing?"play":"pause"});
-  postFrame({method:playing?"play":"pause"});
-  postFrame({event:"command",func:playing?"play":"pause"});
+  if(!state.healthy){mount();showCtrl();return}
+  const p=state.playing!==false;
+  state.playing=!p;
+  $("#cPlayIcon").outerHTML=state.playing?PAUSE_SVG:PLAY_SVG;
+  postFrame({event:state.playing?"play":"pause"});
+  postFrame({method:state.playing?"play":"pause"});
+  postFrame({event:"command",func:state.playing?"play":"pause"});
   showCtrl();
 }
 $("#tap").onclick=showCtrl;
@@ -866,15 +879,17 @@ function curUrl(){
   return s.u(ctxObj(),l);
 }
 
-const WD=15000;
+const WD=11000;
 function armWatchdog(ms){clearTimeout(state.loadTimer);state.loadTimer=setTimeout(onStuck,ms||WD)}
 function onStuck(){if(state.healthy||state.mode!=="play")return;advance(true)}
 
 function markHealthy(){
-  state.healthy=true;state.fails=0;delete state.blk[SRV[state.srv].id];
+  state.healthy=true;state.fails=0;
+  const id=SRV[state.srv].id;state.blk[id]=0;
   clearTimeout(state.loadTimer);
   $("#plLoad").classList.add("off");
-  $("#plHint").textContent="Tap video for controls";
+  $("#cPlayIcon").outerHTML=PAUSE_SVG;state.playing=true;
+  $("#plHint").textContent="Audio: "+audLabel(state.aud);
 }
 
 window.addEventListener("message",e=>{
@@ -884,15 +899,16 @@ window.addEventListener("message",e=>{
   else if(d.event==="error"){state.healthy=false;advance(true)}
 });
 
-async function mount(reuse){
+async function mount(){
   clearTimeout(state.loadTimer);clearInterval(state.posTimer);
-  state.healthy=false;
+  state.healthy=false;state.playing=false;
   hideStuck();
   const my=++state.token;
   const s=SRV[state.srv];
   const st=$("#stage");
   $("#plLoad").classList.remove("off");
   $("#plHint").textContent="Connecting\u2026";
+  $("#cPlayIcon").outerHTML=PLAY_SVG;
   armWatchdog();
 
   let url="";
@@ -913,9 +929,7 @@ async function mount(reuse){
   }
 
   let f=$("#stage iframe");
-  const isNew=!f;
-  if(f){ try{ f.src="about:blank" }catch(e){} }
-  else{
+  if(!f){
     f=document.createElement("iframe");
     f.setAttribute("allowfullscreen","");
     f.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
@@ -929,7 +943,6 @@ async function mount(reuse){
   };
   f.src=url||"about:blank";
   state.frame=f;
-  playing=true;$("#cPlayIcon").outerHTML=PAUSE_SVG;
   $("#ctrl").classList.remove("on");
   state.posTimer=setInterval(()=>{if(!document.hidden)state.pos++},1000);
 }
@@ -937,26 +950,25 @@ async function mount(reuse){
 $("#stage").addEventListener("pointerdown",()=>{
   if(state.mode!=="play")return;
   state.touched=true;
-  if(!state.healthy&&SRV[state.srv].msg)armWatchdog(18000);
+  if(!state.healthy&&SRV[state.srv].msg)armWatchdog(16000);
 });
 
 function advance(auto){
   clearTimeout(state.loadTimer);
   hideStuck();
   const cur=SRV[state.srv];
-  if(cur)state.blk[cur.id]=true;
-  const avail=srvOrder();
-  const next=avail.find(i=>i!==state.srv);
-  if(next==null){
+  if(cur)state.blk[cur.id]=(state.blk[cur.id]||0)+1;
+  if(auto){
     state.fails++;
-    if(auto&&state.fails>2){showStuck();return}
-    state.blk={};state.srv=srvOrder()[0];
-  }else{
-    state.srv=next;
+    if(state.fails>2){showStuck();return}
   }
+  const avail=srvOrder();
+  let next=avail.find(i=>i!==state.srv);
+  if(next==null)next=avail[0];
+  state.srv=next;
   $("#plSrv").value=state.srv;
   $("#plHint").textContent="Server: "+SRV[state.srv].name;
-  mount(true);
+  mount();
 }
 
 function showStuck(){
