@@ -185,18 +185,18 @@ body.fs #plStuck{position:fixed;z-index:12}
 <meta name="theme-color" content="#05060a">
 <title>TUNAmovies</title>
 <link rel="preconnect" href="https://v3-cinemeta.strem.io" crossorigin>
-<link rel="preconnect" href="https://vidfast.vc">
-<link rel="preconnect" href="https://vidsrc.sh">
+<link rel="preconnect" href="https://bingeapi.st">
 <link rel="preconnect" href="https://api.themoviedb.org">
 <link rel="preconnect" href="https://api.embedse.com">
 <link rel="preconnect" href="https://www.eporner.com">
 <link rel="dns-prefetch" href="https://static-ca-cdn.eporner.com">
+<link rel="dns-prefetch" href="https://vidfast.vc">
+<link rel="dns-prefetch" href="https://vidsrc.sh">
 <link rel="dns-prefetch" href="https://vidcore.org">
 <link rel="dns-prefetch" href="https://vidlink.pro">
 <link rel="dns-prefetch" href="https://embedwave.cc">
 <link rel="dns-prefetch" href="https://vidnest.fun">
 <link rel="dns-prefetch" href="https://vixsrc.to">
-<link rel="dns-prefetch" href="https://bingeapi.st">
 </head>
 <body>
 
@@ -332,32 +332,35 @@ const state={
   healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveWhen:"live", liveSport:"all"
 };
 
-/* lang:2 = language param khud support karta hai (best for dubs) */
+/* array ka order = default priority. lang:2 = audio param support (dub ke liye) */
 const SRV=[
- {id:"vidfast",name:"VidFast",need:"imdb",lang:2,msg:true,resume:true,
-  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
- {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:2,resume:true,
-  resolve:async c=>{
-    const lang=(c.l&&c.l.length===2)?c.l:"en";
-    const path=c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e;
-    try{
-      const r=await fetchT("https://vixsrc.to/api/"+path+"?lang="+lang,7000);
-      if(r.ok){const d=await r.json();if(d&&d.src)return "https://vixsrc.to"+d.src}
-    }catch(e){}
-    return "https://vixsrc.to/"+path+"?lang="+lang;
-  }},
- {id:"vidsrc",name:"VidSrc",need:"imdb",lang:1,
-  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
  {id:"binge",name:"Binge",need:"imdb",msg:true,
   u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")},
+ {id:"vidfast",name:"VidFast",need:"imdb",lang:2,msg:true,resume:true,
+  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
+ {id:"vidsrc",name:"VidSrc",need:"imdb",lang:1,
+  u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
+ {id:"vidnest",name:"VidNest",need:"imdb",
+  u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)},
  {id:"vidcore",name:"VidCore",need:"tmdb",lang:1,
   u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
  {id:"vidlink",name:"VidLink",need:"tmdb",lang:1,
   u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true&lang="+l},
  {id:"embedwave",name:"EmbedWave",need:"tmdb",lang:1,
   u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?lang="+l},
- {id:"vidnest",name:"VidNest",need:"imdb",
-  u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)}
+ {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:2,resume:true,
+  resolve:async c=>{
+    const lang=(c.l&&c.l.length===2)?c.l:"en";
+    const path=c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e;
+    try{
+      const r=await fetchT("https://vixsrc.to/api/"+path,7000);
+      if(r.ok){
+        const d=await r.json();
+        if(d&&d.src)return "https://vixsrc.to"+d.src;
+      }
+    }catch(e){}
+    return "https://vixsrc.to/embed/"+path+"?lang="+lang;
+  }}
 ];
 function aq(c,l){
   let s="";
@@ -475,26 +478,24 @@ function defaultAudio(orig){
 }
 const srvOk=s=>s.need!=="tmdb"||!!state.tmdb;
 const audLabel=v=>{const o=state.audioList.find(x=>x.v===v);return o?o.label:(LNAME[v]||v)};
+const isDub=()=>!!state.aud&&state.aud!=="original"&&state.aud!=="auto"&&state.aud!==state.orig;
 
 function srvOrder(){
-  const dub=!!state.aud&&state.aud!=="original"&&state.aud!=="auto"&&state.aud!==state.orig;
   const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
-  list.sort((a,b)=>{
-    const A=SRV[a],B=SRV[b];
-    const fa=state.blk[A.id]||0, fb=state.blk[B.id]||0;
-    if(dub){
-      const la=A.lang||0, lb=B.lang||0;
+  if(isDub()){
+    list.sort((a,b)=>{
+      const la=SRV[a].lang||0, lb=SRV[b].lang||0;
       if(lb!==la)return lb-la;
-    }
-    if(fa!==fb)return fa-fb;
-    return 0;
-  });
+      return (state.blk[SRV[a].id]||0)-(state.blk[SRV[b].id]||0);
+    });
+  }else{
+    list.sort((a,b)=>(state.blk[SRV[a].id]||0)-(state.blk[SRV[b].id]||0));
+  }
   return list;
 }
-function bestLangSrv(){
-  const dub=!!state.aud&&state.aud!=="original"&&state.aud!=="auto";
+function bestSrv(){
   const list=srvOrder();
-  if(dub){const l=list.find(i=>SRV[i].lang);if(l!=null)return l}
+  if(isDub()){const l=list.find(i=>SRV[i].lang);if(l!=null)return l}
   return list[0];
 }
 
@@ -672,7 +673,7 @@ async function openDetail(type,id,startS,startE){
   state.item=d;
   const lg=await loadLang(id);
   state.orig=lg&&lg.code?lg.code:"";
-  state.tmdb=lg&&lg.tmdb?lg.tmdb:"";
+  state.tmdb=(d.moviedb_id?String(d.moviedb_id):"")||(lg&&lg.tmdb?lg.tmdb:"");
   state.origName=state.orig?(LNAME[state.orig]||state.orig.toUpperCase()):"";
   const dubs=await getDubs(state.tmdb,type);
   state.audioList=buildAudio(state.orig,dubs);
@@ -748,7 +749,7 @@ function play(type,id,s,e){
   const saved=state.prog[id];
   state.pos=(saved&&saved.s===s&&saved.e===e&&saved.pos)?saved.pos:0;
 
-  state.srv=bestLangSrv();
+  state.srv=bestSrv();
   state.playId=id;state.playType=type;
 
   $("#pl").classList.remove("hidden");
@@ -783,15 +784,11 @@ function fillSelects(){
   a.value=state.aud;
   a.onchange=()=>{
     state.aud=a.value;state.touched=true;state.fails=0;
-    const want=(state.aud!=="original"&&state.aud!==state.orig);
-    if(want){
-      const l=bestLangSrv();
-      if(l!=null&&!SRV[l].lang){$("#plHint").textContent="Is language ke liye koi server nahi"}
-      else if(l!=null&&l!==state.srv){state.srv=l;sv.value=state.srv}
-      $("#plHint").textContent="Audio: "+audLabel(state.aud);
-    }else{
-      $("#plHint").textContent="Audio: "+audLabel(state.aud);
+    if(isDub()){
+      const l=bestSrv();
+      if(l!=null&&SRV[l].lang&&l!==state.srv){state.srv=l;sv.value=state.srv}
     }
+    $("#plHint").textContent="Audio: "+audLabel(state.aud);
     mount();
   };
 
@@ -879,7 +876,7 @@ function curUrl(){
   return s.u(ctxObj(),l);
 }
 
-const WD=11000;
+const WD=10000;
 function armWatchdog(ms){clearTimeout(state.loadTimer);state.loadTimer=setTimeout(onStuck,ms||WD)}
 function onStuck(){if(state.healthy||state.mode!=="play")return;advance(true)}
 
