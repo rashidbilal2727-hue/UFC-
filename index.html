@@ -110,14 +110,14 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 #plLoad.off i{animation:none;width:100%;background:rgba(255,255,255,.25)}
 @keyframes sl{0%{transform:translateX(-100%)}100%{transform:translateX(320%)}}
 #stage{flex:1;min-height:0;position:relative;background:#000;display:flex;margin:0 10px;border-radius:22px;overflow:hidden;border:1px solid var(--stroke2)}
-#stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000}
+#stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000;transform-origin:center center}
 #tap{position:absolute;left:0;right:0;top:0;height:72%;z-index:5}
-#ctrl{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;gap:40px;pointer-events:none;opacity:0;transition:opacity .18s}
+#ctrl{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;gap:38px;pointer-events:none;opacity:0;transition:opacity .15s}
 #ctrl.on{opacity:1;pointer-events:auto}
-#ctrl button{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.34);border:0;box-shadow:0 2px 12px rgba(0,0,0,.5);transition:transform .1s}
-#ctrl button:active{transform:scale(.9)}
-#ctrl button svg{width:32px;height:32px;display:block}
-#ctrl .pl2{width:64px;height:64px}
+#ctrl button{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.35);box-shadow:0 2px 14px rgba(0,0,0,.55);transition:transform .1s}
+#ctrl button:active{transform:scale(.88)}
+#ctrl button svg{width:34px;height:34px;display:block}
+#ctrl .pl2{width:66px;height:66px}
 #ctrl .pl2 svg{width:30px;height:30px}
 #plStuck{position:absolute;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(5,6,10,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 #plStuck .bx{width:100%;max-width:340px;text-align:center;padding:20px;border-radius:24px}
@@ -134,11 +134,13 @@ h3.sec{font-size:17px;padding:14px 16px 0;margin:0}
 #plBot button:active,#plBot .nx:active{transform:scale(.95)}
 #plHint{flex:0 0 auto;font-size:11.5px;color:#9aa1b2;padding:0 5px;white-space:nowrap}
 #plAud,#plSubLang{box-shadow:inset 0 0 0 1px rgba(255,59,48,.6),inset 0 1px 0 rgba(255,255,255,.22);font-weight:800}
+/* FULLSCREEN — stage poori display bharta hai, koi khali jagah nahi */
 body.fs #plTop,body.fs #plBot{display:none!important}
 body.fs #stage{position:fixed;inset:0;width:100vw;height:100dvh;margin:0;border:0;border-radius:0;z-index:1}
-body.fs #fsFloat{display:none}
-body.fs.portrait #stage{width:100dvh;height:100vw;left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%) rotate(90deg)}
-body.fs #plStuck{position:fixed;z-index:12}
+body.fs #stage iframe{transform:scale(1.25)}
+body.fs #fsFloat{right:12px;bottom:14px;width:46px;height:46px;font-size:16px;opacity:.92}
+body.fs.rot #stage{width:100dvh;height:100vw;left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%) rotate(90deg)}
+body.fs.rot #stage iframe{transform:scale(1.25)}
 .sheet{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end}
 .sheet .in{width:100%;max-height:86vh;overflow-y:auto;border-radius:28px 28px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom))}
 .sheet h3{margin:0 0 14px;font-size:17px}
@@ -149,7 +151,6 @@ body.fs #plStuck{position:fixed;z-index:12}
 .red{background:linear-gradient(150deg,#ff3b30,#c81e14);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 12px 26px rgba(255,59,48,.35)}
 .gh2{background:rgba(255,255,255,.1);border:1px solid var(--stroke2);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
 .sub{font-size:12px;color:#9aa1b2;text-align:center;margin-top:12px;line-height:1.5}
-.sub a{color:#8bb4ff;text-decoration:underline}
 .err{color:#ff8b83;font-size:12.5px;margin-bottom:10px}
 #auth{position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(5,6,10,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 #auth .box{width:100%;max-width:360px;padding:24px;border-radius:26px}
@@ -190,8 +191,8 @@ body.fs #plStuck{position:fixed;z-index:12}
 <link rel="preconnect" href="https://api.embedse.com">
 <link rel="preconnect" href="https://www.eporner.com">
 <link rel="dns-prefetch" href="https://static-ca-cdn.eporner.com">
-<link rel="dns-prefetch" href="https://vidfast.vc">
 <link rel="dns-prefetch" href="https://vidsrc.sh">
+<link rel="dns-prefetch" href="https://vidfast.vc">
 <link rel="dns-prefetch" href="https://vidcore.org">
 <link rel="dns-prefetch" href="https://vidlink.pro">
 <link rel="dns-prefetch" href="https://embedwave.cc">
@@ -229,20 +230,20 @@ body.fs #plStuck{position:fixed;z-index:12}
   <div id="stage">
     <div id="tap"></div>
     <div id="ctrl">
-      <button id="cBack" aria-label="Back 10">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 5V2.5L7.5 5.5l4 3V6a6.2 6.2 0 1 1-6.3 6.2"/><text x="12.4" y="16" font-size="6.6" font-weight="800" fill="currentColor" stroke="none" text-anchor="middle" font-family="system-ui">10</text></svg>
+      <button id="cBack" aria-label="10 second peeche">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 5V2.5L7.5 5.5l4 3V6a6.2 6.2 0 1 1-6.3 6.2"/><text x="12.4" y="16" font-size="6.8" font-weight="800" fill="currentColor" stroke="none" text-anchor="middle" font-family="system-ui">10</text></svg>
       </button>
       <button id="cPlay" class="pl2" aria-label="Play / Pause">
         <svg id="cPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6L19 12z"/></svg>
       </button>
-      <button id="cFwd" aria-label="Forward 10">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 5V2.5l4 3-4 3V6a6.2 6.2 0 1 0 6.3 6.2"/><text x="11.6" y="16" font-size="6.6" font-weight="800" fill="currentColor" stroke="none" text-anchor="middle" font-family="system-ui">10</text></svg>
+      <button id="cFwd" aria-label="10 second aage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 5V2.5l4 3-4 3V6a6.2 6.2 0 1 0 6.3 6.2"/><text x="11.6" y="16" font-size="6.8" font-weight="800" fill="currentColor" stroke="none" text-anchor="middle" font-family="system-ui">10</text></svg>
       </button>
     </div>
     <button id="fsFloat">&#9974;</button>
     <div id="plStuck" class="hidden">
       <div class="bx g">
-        <h3>Ye server nahi chala</h3>
+        <h3>Stream nahi khul raha</h3>
         <p>Next dabao dusra server aayega, ya New tab me kholo.</p>
         <button class="wide red" id="stkNext">Next server</button>
         <button class="wide gh2" id="stkNew">New tab me kholo</button>
@@ -257,7 +258,7 @@ body.fs #plStuck{position:fixed;z-index:12}
     <select id="plSubLang"></select>
     <button class="nx" id="plNext">Next &#9654;</button>
     <button class="gh" id="plNew">New tab</button>
-    <span id="plHint">Tap video</span>
+    <span id="plHint">If black, tap Next</span>
   </div>
 </div>
 
@@ -292,7 +293,7 @@ body.fs #plStuck{position:fixed;z-index:12}
     </div>
     <div class="fld"><label>TMDB API key (dubbing + subtitle list ke liye)</label><input id="setKey" placeholder="32 character v3 api key paste karo" autocomplete="off"></div>
     <button class="wide red" id="setSave">Save</button>
-    <div class="sub">Key yahan se lo: <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener">themoviedb.org/settings/api</a> &mdash; free account banao, phir "API Key (v3 auth)" copy karo. Token nahi, Key.</div>
+    <div class="sub">Key themoviedb.org &gt; Settings &gt; API &gt; "API Key (v3 auth)" se milegi. Token nahi, Key.</div>
   </div>
 </div>
 
@@ -329,35 +330,31 @@ const state={
   set:Object.assign({qual:"1080",aud:"auto",sub:"off"},LS.get("nfx_set",{})),
   item:null, s:1, e:1, srv:0, qual:"1080", aud:"hi", sub:"off", touched:false, timer:null, loadTimer:null,
   playId:null, playType:"movie", orig:"", origName:"", audioList:[], tmdb:"", pos:0, posTimer:null,
-  healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveWhen:"live", liveSport:"all"
+  healthy:false, fails:0, mode:"play", frame:null, token:0, blk:{}, liveWhen:"live", liveSport:"all", playing:false
 };
 
-/* array ka order = default priority. lang:2 = audio param support (dub ke liye) */
 const SRV=[
  {id:"binge",name:"Binge",need:"imdb",msg:true,
   u:(c,l)=>"https://bingeapi.st/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&theme=dark&title=0&episodes=0"+(c.sub&&c.sub!=="off"?"&sub_lang="+c.sub:"")},
- {id:"vidfast",name:"VidFast",need:"imdb",lang:2,msg:true,resume:true,
-  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
- {id:"vidsrc",name:"VidSrc",need:"imdb",lang:1,
+ {id:"vidsrc",name:"VidSrc",need:"imdb",lang:true,
   u:(c,l)=>"https://vidsrc.sh/embed/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoplay=1&ds_lang="+l+(c.sub&&c.sub!=="off"?"&ds_sub="+c.sub:"")},
+ {id:"vidfast",name:"VidFast",need:"imdb",lang:true,msg:true,resume:true,
+  u:(c,l)=>"https://vidfast.vc/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)+"?autoPlay=true"+aq(c,l)},
  {id:"vidnest",name:"VidNest",need:"imdb",
   u:(c,l)=>"https://vidnest.fun/"+(c.t==="movie"?"movie/"+c.id:"tv/"+c.id+"/"+c.s+"/"+c.e)},
- {id:"vidcore",name:"VidCore",need:"tmdb",lang:1,
+ {id:"vidcore",name:"VidCore",need:"tmdb",
   u:(c,l)=>"https://vidcore.org/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=1&lang="+l},
- {id:"vidlink",name:"VidLink",need:"tmdb",lang:1,
+ {id:"vidlink",name:"VidLink",need:"tmdb",
   u:(c,l)=>"https://vidlink.pro/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?autoplay=true&lang="+l},
- {id:"embedwave",name:"EmbedWave",need:"tmdb",lang:1,
+ {id:"embedwave",name:"EmbedWave",need:"tmdb",
   u:(c,l)=>"https://embedwave.cc/embed/"+(c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e)+"?lang="+l},
- {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:2,resume:true,
+ {id:"vixsrc",name:"VixSrc HD",need:"tmdb",lang:true,resume:true,
   resolve:async c=>{
     const lang=(c.l&&c.l.length===2)?c.l:"en";
     const path=c.t==="movie"?"movie/"+c.tmdb:"tv/"+c.tmdb+"/"+c.s+"/"+c.e;
     try{
       const r=await fetchT("https://vixsrc.to/api/"+path,7000);
-      if(r.ok){
-        const d=await r.json();
-        if(d&&d.src)return "https://vixsrc.to"+d.src;
-      }
+      if(r.ok){const d=await r.json();if(d&&d.src)return "https://vixsrc.to"+d.src}
     }catch(e){}
     return "https://vixsrc.to/embed/"+path+"?lang="+lang;
   }}
@@ -482,21 +479,18 @@ const isDub=()=>!!state.aud&&state.aud!=="original"&&state.aud!=="auto"&&state.a
 
 function srvOrder(){
   const list=SRV.map((x,i)=>i).filter(i=>srvOk(SRV[i]));
-  if(isDub()){
-    list.sort((a,b)=>{
-      const la=SRV[a].lang||0, lb=SRV[b].lang||0;
+  list.sort((a,b)=>{
+    if(isDub()){
+      const la=SRV[a].lang?1:0, lb=SRV[b].lang?1:0;
       if(lb!==la)return lb-la;
-      return (state.blk[SRV[a].id]||0)-(state.blk[SRV[b].id]||0);
-    });
-  }else{
-    list.sort((a,b)=>(state.blk[SRV[a].id]||0)-(state.blk[SRV[b].id]||0));
-  }
+    }
+    return (state.blk[SRV[a].id]?1:0)-(state.blk[SRV[b].id]?1:0);
+  });
   return list;
 }
-function bestSrv(){
-  const list=srvOrder();
-  if(isDub()){const l=list.find(i=>SRV[i].lang);if(l!=null)return l}
-  return list[0];
+function langSrv(){
+  const l=srvOrder().find(i=>SRV[i].lang);
+  return l==null?null:l;
 }
 
 function go(v){
@@ -742,14 +736,14 @@ function play(type,id,s,e){
   const name=it?it.name:(state.prog[id]&&state.prog[id].name)||"Playing";
   state.item=it||{id,name,poster:(state.prog[id]||{}).poster};
   state.s=s;state.e=e;state.touched=false;state.fails=0;state.healthy=false;
-  state.mode="play";state.blk={};
+  state.mode="play";state.blk={};state.playing=false;
   state.qual=state.set.qual;
   state.aud=defaultAudio(state.orig);
   state.sub=state.set.sub||"off";
   const saved=state.prog[id];
   state.pos=(saved&&saved.s===s&&saved.e===e&&saved.pos)?saved.pos:0;
 
-  state.srv=bestSrv();
+  state.srv=isDub()?(langSrv()!=null?langSrv():srvOrder()[0]):srvOrder()[0];
   state.playId=id;state.playType=type;
 
   $("#pl").classList.remove("hidden");
@@ -784,10 +778,8 @@ function fillSelects(){
   a.value=state.aud;
   a.onchange=()=>{
     state.aud=a.value;state.touched=true;state.fails=0;
-    if(isDub()){
-      const l=bestSrv();
-      if(l!=null&&SRV[l].lang&&l!==state.srv){state.srv=l;sv.value=state.srv}
-    }
+    const l=langSrv();
+    if(isDub()&&l!=null&&l!==state.srv){state.srv=l;sv.value=state.srv;state.blk={}}
     $("#plHint").textContent="Audio: "+audLabel(state.aud);
     mount();
   };
@@ -807,43 +799,54 @@ function fillSelects(){
   $("#fsFloat").onclick=toggleFs;
 }
 
-function fsLayout(){document.body.classList.toggle("portrait",window.innerHeight>window.innerWidth)}
 async function toggleFs(){
   const p=$("#pl");
   if(document.fullscreenElement||document.webkitFullscreenElement){
     try{ if(document.exitFullscreen)await document.exitFullscreen() }catch(e){}
     try{ if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock() }catch(e){}
-    document.body.classList.remove("fs","portrait");
+    document.body.classList.remove("fs","rot");
     return;
   }
-  document.body.classList.add("fs");fsLayout();
+  document.body.classList.add("fs");
+  if(window.innerHeight>window.innerWidth)document.body.classList.add("rot");
   try{
     if(p.requestFullscreen)await p.requestFullscreen({navigationUI:"hide"});
     else if(p.webkitRequestFullscreen)p.webkitRequestFullscreen();
   }catch(e){}
-  fsLayout();
-  try{ await screen.orientation.lock("landscape") }catch(e){}
+  try{ await screen.orientation.lock("landscape"); }catch(e){}
 }
-window.addEventListener("resize",fsLayout);
-window.addEventListener("orientationchange",()=>setTimeout(fsLayout,180));
+function fsFix(){
+  if(!document.body.classList.contains("fs"))return;
+  document.body.classList.toggle("rot",window.innerHeight>window.innerWidth);
+}
+window.addEventListener("resize",fsFix);
+window.addEventListener("orientationchange",()=>setTimeout(fsFix,150));
 document.addEventListener("fullscreenchange",()=>{
-  if(!document.fullscreenElement)document.body.classList.remove("fs","portrait");
+  if(!document.fullscreenElement)document.body.classList.remove("fs","rot");
 });
 
+/* ---------- TAP CONTROLS ---------- */
 let ctrlT;
 const PLAY_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.2v13.6L19 12z"/></svg>';
 const PAUSE_SVG='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg>';
 function showCtrl(){
   const c=$("#ctrl");c.classList.add("on");
-  clearTimeout(ctrlT);ctrlT=setTimeout(()=>c.classList.remove("on"),2400);
+  clearTimeout(ctrlT);ctrlT=setTimeout(()=>c.classList.remove("on"),1600);
 }
+function hideCtrl(){clearTimeout(ctrlT);$("#ctrl").classList.remove("on")}
 function postFrame(m){
-  try{const f=state.frame;if(f&&f.contentWindow)f.contentWindow.postMessage(m,"*")}catch(e){}
+  try{
+    const f=state.frame;
+    if(!f||!f.contentWindow)return;
+    f.contentWindow.postMessage(m,"*");
+    f.contentWindow.postMessage(Object.assign({source:"bingeapi_player"},m),"*");
+  }catch(e){}
 }
 function seek(d){
   state.pos=Math.max(0,state.pos+d);
   postFrame({event:"seek",offset:d});
   postFrame({event:"seek",value:d});
+  postFrame({event:"seek",time:d});
   postFrame({method:"seek",value:d});
   postFrame({event:"command",func:"seek",args:[d]});
   const s=SRV[state.srv];
@@ -852,15 +855,18 @@ function seek(d){
 }
 function togglePlay(){
   if(!state.healthy){mount();showCtrl();return}
-  const p=state.playing!==false;
-  state.playing=!p;
+  state.playing=!state.playing;
   $("#cPlayIcon").outerHTML=state.playing?PAUSE_SVG:PLAY_SVG;
   postFrame({event:state.playing?"play":"pause"});
+  postFrame({event:state.playing?"resume":"pause"});
   postFrame({method:state.playing?"play":"pause"});
   postFrame({event:"command",func:state.playing?"play":"pause"});
   showCtrl();
 }
-$("#tap").onclick=showCtrl;
+$("#tap").onclick=()=>{
+  const c=$("#ctrl");
+  if(c.classList.contains("on"))hideCtrl();else showCtrl();
+};
 $("#cBack").onclick=e=>{e.stopPropagation();seek(-10)};
 $("#cFwd").onclick=e=>{e.stopPropagation();seek(10)};
 $("#cPlay").onclick=e=>{e.stopPropagation();togglePlay()};
@@ -876,17 +882,15 @@ function curUrl(){
   return s.u(ctxObj(),l);
 }
 
-const WD=10000;
+const WD=12000;
 function armWatchdog(ms){clearTimeout(state.loadTimer);state.loadTimer=setTimeout(onStuck,ms||WD)}
 function onStuck(){if(state.healthy||state.mode!=="play")return;advance(true)}
 
 function markHealthy(){
-  state.healthy=true;state.fails=0;
-  const id=SRV[state.srv].id;state.blk[id]=0;
+  state.healthy=true;state.fails=0;delete state.blk[SRV[state.srv].id];
   clearTimeout(state.loadTimer);
   $("#plLoad").classList.add("off");
-  $("#cPlayIcon").outerHTML=PAUSE_SVG;state.playing=true;
-  $("#plHint").textContent="Audio: "+audLabel(state.aud);
+  state.playing=true;$("#cPlayIcon").outerHTML=PAUSE_SVG;
 }
 
 window.addEventListener("message",e=>{
@@ -899,10 +903,11 @@ window.addEventListener("message",e=>{
 async function mount(){
   clearTimeout(state.loadTimer);clearInterval(state.posTimer);
   state.healthy=false;state.playing=false;
-  hideStuck();
+  hideStuck();hideCtrl();
   const my=++state.token;
   const s=SRV[state.srv];
   const st=$("#stage");
+  st.querySelectorAll("iframe").forEach(f=>f.remove());
   $("#plLoad").classList.remove("off");
   $("#plHint").textContent="Connecting\u2026";
   $("#cPlayIcon").outerHTML=PLAY_SVG;
@@ -914,55 +919,41 @@ async function mount(){
   }catch(e){}
   if(my!==state.token)return;
 
-  if(s.id==="vixsrc"&&url){
-    try{
-      const r=await fetchT("https://api.allorigins.win/raw?url="+encodeURIComponent(url),8000);
-      const t=await r.text();
-      if(/you have been blocked|just a moment|cf-browser-verification|checking your browser/i.test(t)){
-        if(my===state.token){advance(true);return}
-      }
-    }catch(e){}
-    if(my!==state.token)return;
-  }
-
-  let f=$("#stage iframe");
-  if(!f){
-    f=document.createElement("iframe");
-    f.setAttribute("allowfullscreen","");
-    f.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
-    f.setAttribute("referrerpolicy","no-referrer");
-    st.insertBefore(f,$("#tap"));
-  }
+  const f=document.createElement("iframe");
+  f.setAttribute("allowfullscreen","");
+  f.setAttribute("allow","autoplay; encrypted-media; fullscreen; picture-in-picture");
+  f.setAttribute("referrerpolicy","no-referrer");
+  f.src=url||"about:blank";
   f.onload=()=>{
     if(state.healthy)return;
     $("#plHint").textContent="Chal raha hai? warna Next dabao";
     if(!s.msg){clearTimeout(state.loadTimer);$("#plLoad").classList.add("off")}
   };
-  f.src=url||"about:blank";
+  st.insertBefore(f,$("#tap"));
   state.frame=f;
-  $("#ctrl").classList.remove("on");
   state.posTimer=setInterval(()=>{if(!document.hidden)state.pos++},1000);
 }
 
 $("#stage").addEventListener("pointerdown",()=>{
   if(state.mode!=="play")return;
   state.touched=true;
-  if(!state.healthy&&SRV[state.srv].msg)armWatchdog(16000);
+  if(!state.healthy&&SRV[state.srv].msg)armWatchdog(15000);
 });
 
 function advance(auto){
   clearTimeout(state.loadTimer);
   hideStuck();
   const cur=SRV[state.srv];
-  if(cur)state.blk[cur.id]=(state.blk[cur.id]||0)+1;
-  if(auto){
-    state.fails++;
-    if(state.fails>2){showStuck();return}
-  }
+  if(cur)state.blk[cur.id]=true;
   const avail=srvOrder();
-  let next=avail.find(i=>i!==state.srv);
-  if(next==null)next=avail[0];
-  state.srv=next;
+  const next=avail.find(i=>i!==state.srv);
+  if(next==null){
+    state.fails++;
+    if(auto&&state.fails>2){showStuck();return}
+    state.blk={};state.srv=srvOrder()[0];
+  }else{
+    state.srv=next;
+  }
   $("#plSrv").value=state.srv;
   $("#plHint").textContent="Server: "+SRV[state.srv].name;
   mount();
@@ -983,12 +974,12 @@ $("#stkClose").onclick=closePlayer;
 function closePlayer(){
   clearTimeout(state.timer);clearTimeout(state.loadTimer);clearInterval(state.posTimer);clearTimeout(ctrlT);
   state.token++;
-  $("#ctrl").classList.remove("on");
+  hideCtrl();
   $("#stage").querySelectorAll("iframe").forEach(f=>f.remove());
   $("#pl").classList.add("hidden");
   hideStuck();
   document.body.style.overflow="";
-  document.body.classList.remove("fs","portrait");
+  document.body.classList.remove("fs","rot");
   if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
   try{ if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock() }catch(e){}
   if(state.playId){
@@ -1002,6 +993,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&!$("#pl").classList.contains("hidden"))closePlayer();
 });
 
+/* ---------- LIVE (naye tab me) ---------- */
 const LIVE_SPORTS=[["all","All"],["soccer","Football"],["basketball","Basketball"],["american-football","NFL"],["hockey","NHL"],["combat","Boxing / UFC"],["racing","Racing"],["golf","Golf"]];
 const LIVE_WHEN=[["live","Live now"],["soon","Upcoming"],["all","All"]];
 
@@ -1076,6 +1068,7 @@ async function openLiveMatch(id,title){
   window.open(url,"_blank");
 }
 
+/* ---------- PORN (naye tab me) ---------- */
 async function renderPorn(){
   const m=$("#main");m.innerHTML="";
   m.appendChild(el("h3","sec","Videos"));
